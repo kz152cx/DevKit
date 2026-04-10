@@ -3,209 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>奶龙 Nailong - 超级无敌可爱的小黄龙</title>
+    <title>超萌奶龙 - 宇宙无敌小可爱</title>
     <style>
-        /* 全局样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Comic Sans MS', '幼圆', 'PingFang SC', sans-serif;
+        /* 定义可爱的全局颜色和变量 */
+        :root {
+            --primary-color: #FFD700; /* 奶龙黄 */
+            --secondary-color: #FFA500; /* 暖橙色 */
+            --bg-color: #FFFDF5; /* 极浅的奶油黄背景 */
+            --text-color: #6B5B4C; /* 柔和的咖啡色文字，比黑色更可爱 */
         }
 
         body {
-            background-color: #FFF9E6; /* 淡淡的奶油黄背景 */
-            color: #5D4037; /* 温暖的深棕色字体 */
+            font-family: 'Comic Sans MS', 'Microsoft YaHei', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
             line-height: 1.6;
         }
 
-        /* 顶部导航条 */
+        /* 头部封面区域 */
         header {
-            background-color: #FFC107; /* 奶龙主题黄 */
-            padding: 1rem 0;
+            background-color: var(--primary-color);
             text-align: center;
-            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        header h2 {
-            color: #FFFFFF;
-            text-shadow: 2px 2px 0px #FF9800;
-            letter-spacing: 2px;
-        }
-
-        /* 欢迎头图区域 */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 4rem 2rem;
-            text-align: center;
-            background: linear-gradient(135deg, #FFD54F 0%, #FFB300 100%);
-            color: white;
-            border-bottom-left-radius: 50px;
-            border-bottom-right-radius: 50px;
-            margin-bottom: 2rem;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            text-shadow: 3px 3px 0px #F57C00;
-            margin-bottom: 1rem;
-            animation: bounce 2s infinite ease-in-out;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-            font-weight: bold;
-        }
-
-        /* 图片占位符（你可以换成真实的奶龙图片） */
-        .nailong-avatar {
-            width: 200px;
-            height: 200px;
-            background-color: #FFFFFF;
-            border: 8px solid #FFF;
-            border-radius: 50%;
-            margin: 1rem 0;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #FFB300;
-            font-weight: bold;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-
-        .nailong-avatar:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .nailong-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* 核心内容区 */
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2rem;
-            color: #FF9800;
-            margin: 2rem 0;
+            padding: 50px 20px 30px;
+            border-bottom: 6px dashed var(--secondary-color);
+            box-shadow: 0 4px 15px rgba(255, 165, 0, 0.2);
             position: relative;
         }
 
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 4px;
-            background-color: #FF9800;
-            margin: 10px auto 0;
-            border-radius: 2px;
+        header h1 {
+            font-size: 3.5em;
+            margin: 0;
+            color: #FFFFFF;
+            text-shadow: 3px 3px 0px var(--secondary-color);
+            letter-spacing: 2px;
         }
 
-        /* 卡片网格 */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+        header p {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 30px;
         }
 
-        .card {
+        .hero-img {
+            max-width: 100%;
+            width: 600px; /* 控制主图最大宽度 */
+            height: auto;
+            border-radius: 30px; /* 圆滚滚的边框 */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border: 8px solid white;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .hero-img:hover {
+            transform: scale(1.05) rotate(-2deg); /* 鼠标悬停时的小调皮效果 */
+        }
+
+        /* 内容容器 */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 简介卡片 */
+        .about {
             background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            padding: 40px;
+            border-radius: 25px;
             text-align: center;
-            border-top: 5px solid #FFC107;
-            transition: transform 0.3s, box-shadow 0.3s;
+            margin: 40px auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 3px solid #FFE4B5;
+            position: relative;
         }
 
-        .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 25px rgba(255, 193, 7, 0.2);
+        .about h2 {
+            color: var(--secondary-color);
+            font-size: 2em;
+            margin-top: 0;
         }
 
-        .card h3 {
-            color: #F57C00;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
+        .about p {
+            font-size: 1.1em;
+        }
+
+        /* 照片墙网格 */
+        .gallery {
+            display: grid;
+            /* 响应式网格：在手机上单列，在电脑上多列 */
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            padding-bottom: 40px;
+        }
+
+        .gallery-item {
+            background: white;
+            padding: 12px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(255, 165, 0, 0.3);
+            border-color: var(--primary-color);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 240px; /* 固定高度让网格看起来整齐 */
+            object-fit: cover; /* 保证图片不变形，自动裁剪填充 */
+            border-radius: 12px;
         }
 
         /* 页脚 */
         footer {
             text-align: center;
-            padding: 2rem;
-            background-color: #5D4037;
-            color: #D7CCC8;
-            margin-top: 3rem;
-        }
-
-        /* 简单的弹跳动画 */
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
+            padding: 30px;
+            background-color: var(--secondary-color);
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-top: 5px solid var(--primary-color);
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h2>🐉 奶龙粉丝乐园</h2>
+        <h1>🐉 奶龙来啦！ 🐉</h1>
+        <p>你的快乐源泉，宇宙无敌呆萌小可爱</p>
+        <img src="ph.jpg" alt="可爱的奶龙主视觉图" class="hero-img">
     </header>
 
-    <div class="hero">
-        <div class="nailong-avatar">
-            脑补一只奶龙
-        </div>
-        <h1>奶龙 (Nailong)</h1>
-        <p>“我是宇宙无敌可爱的奶龙！嗷呜~”</p>
-    </div>
-
     <div class="container">
-        <h2 class="section-title">关于奶龙</h2>
-        <p style="text-align: center; font-size: 1.1rem; margin-bottom: 2rem;">
-            奶龙是一只拥有着黄色胖嘟嘟身体、性格乐观开朗的异星小龙。它因为飞船发生故障而意外降落地球，结识了天才少年小七。从此，这对欢喜冤家开启了一系列爆笑又温馨的冒险日常！
-        </p>
+        <section class="about">
+            <h2>✨ 关于这只黄色小胖几 ✨</h2>
+            <p>奶龙是一只胖乎乎、圆滚滚的黄色小恐龙。他性格呆萌、乐观开朗，还是个超级小吃货！</p>
+            <p>虽然经常闹出一些搞笑的乌龙事件，但他总能用那招牌的治愈系笑容，瞬间萌化所有人的心。准备好迎接下面的可爱暴击了吗？</p>
+        </section>
 
-        <h2 class="section-title">性格与特征</h2>
-        <div class="features">
-            <div class="card">
-                <h3>🍔 顶级吃货</h3>
-                <p>看到美食就走不动路！无论遇到什么困难，只要有一顿好吃的就能瞬间满血复活。肚子永远像个无底洞。</p>
-            </div>
-            <div class="card">
-                <h3>💛 呆萌乐观</h3>
-                <p>脑回路清奇，经常做一些让人啼笑皆非的蠢事，但天生乐观派，遇到挫折也绝不气馁，总是笑嘻嘻的。</p>
-            </div>
-            <div class="card">
-                <h3>🤝 重情重义</h3>
-                <p>虽然经常坑队友（尤其是小七），但在关键时刻绝对靠谱。为了保护好朋友，奶龙会爆发出惊人的力量！</p>
-            </div>
-            <div class="card">
-                <h3>✨ 肉嘟嘟属性</h3>
-                <p>拥有像果冻一样Q弹的黄色大肚皮，走起路来一晃一晃的，让人忍不住想捏一捏！</p>
-            </div>
-        </div>
+        <section class="gallery">
+            <div class="gallery-item"><img src="1.jpg" alt="奶龙的可爱瞬间 1"></div>
+            <div class="gallery-item"><img src="2.jpg" alt="奶龙的可爱瞬间 2"></div>
+            <div class="gallery-item"><img src="3.jpg" alt="奶龙的可爱瞬间 3"></div>
+            <div class="gallery-item"><img src="4.jpg" alt="奶龙的可爱瞬间 4"></div>
+            <div class="gallery-item"><img src="5.jpg" alt="奶龙的可爱瞬间 5"></div>
+            <div class="gallery-item"><img src="6.jpg" alt="奶龙的可爱瞬间 6"></div>
+            <div class="gallery-item"><img src="7.jpg" alt="奶龙的可爱瞬间 7"></div>
+            <div class="gallery-item"><img src="8.jpg" alt="奶龙的可爱瞬间 8"></div>
+        </section>
     </div>
 
     <footer>
-        <p>本网页为奶龙粉丝出于喜爱制作，非官方出品。继续保持可爱呀！💛</p>
+        <p>💛 本网页由超级喜欢奶龙的粉丝倾情制作 💛</p>
     </footer>
 
 </body>
