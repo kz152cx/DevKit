@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>超萌奶龙 - 宇宙无敌小可爱</title>
     <style>
-        /* 定义可爱的全局颜色和变量 */
+        /* 全局颜色和变量 */
         :root {
             --primary-color: #FFD700; /* 奶龙黄 */
             --secondary-color: #FFA500; /* 暖橙色 */
             --bg-color: #FFFDF5; /* 极浅的奶油黄背景 */
-            --text-color: #6B5B4C; /* 柔和的咖啡色文字，比黑色更可爱 */
+            --text-color: #6B5B4C; /* 柔和的咖啡色文字 */
+            --card-bg: #FFFFFF;
         }
 
         body {
@@ -19,150 +20,302 @@
             color: var(--text-color);
             margin: 0;
             padding: 0;
-            line-height: 1.6;
+            line-height: 1.8;
+            /* 防止欢迎页出现时页面可以滚动 */
+            overflow-x: hidden; 
         }
 
-        /* 头部封面区域 */
+        /* ---------------- 欢迎页 & 开始大笑按钮 ---------------- */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+
+        .start-btn {
+            font-size: 2.5em;
+            padding: 20px 60px;
+            background-color: var(--primary-color);
+            color: white;
+            border: 8px solid white;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.4);
+            font-family: inherit;
+            font-weight: bold;
+            text-shadow: 2px 2px 0px var(--secondary-color);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: pulse 2s infinite;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.1) rotate(-3deg);
+            background-color: var(--secondary-color);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        /* 头部大封面区域 */
         header {
             background-color: var(--primary-color);
             text-align: center;
-            padding: 50px 20px 30px;
-            border-bottom: 6px dashed var(--secondary-color);
+            padding: 60px 20px 40px;
+            border-bottom: 8px wave var(--secondary-color);
             box-shadow: 0 4px 15px rgba(255, 165, 0, 0.2);
-            position: relative;
         }
 
         header h1 {
             font-size: 3.5em;
             margin: 0;
             color: #FFFFFF;
-            text-shadow: 3px 3px 0px var(--secondary-color);
+            text-shadow: 4px 4px 0px var(--secondary-color);
             letter-spacing: 2px;
         }
 
         header p {
-            font-size: 1.3em;
+            font-size: 1.4em;
             font-weight: bold;
-            color: var(--text-color);
             margin-bottom: 30px;
+            color: var(--text-color);
         }
 
         .hero-img {
             max-width: 100%;
-            width: 600px; /* 控制主图最大宽度 */
+            width: 500px;
             height: auto;
-            border-radius: 30px; /* 圆滚滚的边框 */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border-radius: 40px; 
+            box-shadow: 0 15px 25px rgba(0,0,0,0.1);
             border: 8px solid white;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.4s ease;
         }
 
         .hero-img:hover {
-            transform: scale(1.05) rotate(-2deg); /* 鼠标悬停时的小调皮效果 */
+            transform: scale(1.05) rotate(3deg);
         }
 
         /* 内容容器 */
         .container {
-            max-width: 1100px;
+            max-width: 1000px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
         }
 
-        /* 简介卡片 */
-        .about {
-            background: white;
-            padding: 40px;
-            border-radius: 25px;
-            text-align: center;
-            margin: 40px auto;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-            border: 3px solid #FFE4B5;
-            position: relative;
+        /* 分开排布的故事卡片样式 */
+        .story-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 50px;
+            margin-top: 20px;
         }
 
-        .about h2 {
-            color: var(--secondary-color);
-            font-size: 2em;
-            margin-top: 0;
-        }
-
-        .about p {
-            font-size: 1.1em;
-        }
-
-        /* 照片墙网格 */
-        .gallery {
-            display: grid;
-            /* 响应式网格：在手机上单列，在电脑上多列 */
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-            padding-bottom: 40px;
-        }
-
-        .gallery-item {
-            background: white;
-            padding: 12px;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        .story-card {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 30px;
+            gap: 40px;
+            box-shadow: 0 10px 30px rgba(255, 165, 0, 0.08);
+            border: 3px dashed #FFE4B5;
             transition: all 0.3s ease;
-            cursor: pointer;
         }
 
-        .gallery-item:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(255, 165, 0, 0.3);
-            border-color: var(--primary-color);
+        .story-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary-color);
+            box-shadow: 0 15px 35px rgba(255, 165, 0, 0.15);
         }
 
-        .gallery-item img {
+        .story-card.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .story-img-wrapper {
+            flex: 0 0 50%; /* 让图片占据一半空间 */
+        }
+
+        .story-img-wrapper img {
             width: 100%;
-            height: 240px; /* 固定高度让网格看起来整齐 */
-            object-fit: cover; /* 保证图片不变形，自动裁剪填充 */
-            border-radius: 12px;
+            height: 350px; /* 稍微调高了一点图片 */
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .story-text {
+            flex: 1;
+            display: flex;
+            justify-content: center; /* 让没有描述文字的标题居中对齐 */
+            align-items: center;
+            text-align: center;
+        }
+
+        .story-text h3 {
+            color: var(--secondary-color);
+            font-size: 2.5em; /* 字号调大，显得更可爱醒目 */
+            margin: 0;
+            text-shadow: 2px 2px 0px #FFE4B5;
+        }
+
+        /* 手机屏幕适配 */
+        @media (max-width: 768px) {
+            .story-card, .story-card.reverse {
+                flex-direction: column;
+                padding: 20px;
+            }
+            .story-img-wrapper {
+                width: 100%;
+            }
+            .story-img-wrapper img {
+                height: auto;
+            }
+            .story-text h3 {
+                margin-top: 20px;
+            }
+            .start-btn {
+                font-size: 1.8em;
+                padding: 15px 40px;
+            }
         }
 
         /* 页脚 */
         footer {
             text-align: center;
-            padding: 30px;
+            padding: 40px;
             background-color: var(--secondary-color);
             color: white;
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: bold;
-            border-top: 5px solid var(--primary-color);
+            border-top: 6px dashed var(--primary-color);
         }
     </style>
 </head>
 <body>
 
+    <div id="welcome-screen">
+        <button class="start-btn" id="start-btn" onclick="startExperience()">开始大笑 😆</button>
+    </div>
+
+    <video id="bg-video" src="a.mp4" loop style="display: none;"></video>
+
     <header>
-        <h1>🐉 奶龙来啦！ 🐉</h1>
-        <p>你的快乐源泉，宇宙无敌呆萌小可爱</p>
-        <img src="ph.jpg" alt="可爱的奶龙主视觉图" class="hero-img">
+        <h1>🐉 奶龙日记 🐉</h1>
+        <p>捕捉一只野生小可爱！</p>
+        <img src="ph.jpg" alt="奶龙主视觉图" class="hero-img">
     </header>
 
     <div class="container">
-        <section class="about">
-            <h2>✨ 关于这只黄色小胖几 ✨</h2>
-            <p>奶龙是一只胖乎乎、圆滚滚的黄色小恐龙。他性格呆萌、乐观开朗，还是个超级小吃货！</p>
-            <p>虽然经常闹出一些搞笑的乌龙事件，但他总能用那招牌的治愈系笑容，瞬间萌化所有人的心。准备好迎接下面的可爱暴击了吗？</p>
-        </section>
+        <div class="story-timeline">
+            
+            <div class="story-card">
+                <div class="story-img-wrapper">
+                    <img src="1.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
 
-        <section class="gallery">
-            <div class="gallery-item"><img src="1.jpg" alt="奶龙的可爱瞬间 1"></div>
-            <div class="gallery-item"><img src="2.jpg" alt="奶龙的可爱瞬间 2"></div>
-            <div class="gallery-item"><img src="3.jpg" alt="奶龙的可爱瞬间 3"></div>
-            <div class="gallery-item"><img src="4.jpg" alt="奶龙的可爱瞬间 4"></div>
-            <div class="gallery-item"><img src="5.jpg" alt="奶龙的可爱瞬间 5"></div>
-            <div class="gallery-item"><img src="6.jpg" alt="奶龙的可爱瞬间 6"></div>
-            <div class="gallery-item"><img src="7.jpg" alt="奶龙的可爱瞬间 7"></div>
-            <div class="gallery-item"><img src="8.jpg" alt="奶龙的可爱瞬间 8"></div>
-        </section>
+            <div class="story-card reverse">
+                <div class="story-img-wrapper">
+                    <img src="2.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-img-wrapper">
+                    <img src="3.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
+
+            <div class="story-card reverse">
+                <div class="story-img-wrapper">
+                    <img src="4.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-img-wrapper">
+                    <img src="5.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
+
+            <div class="story-card reverse">
+                <div class="story-img-wrapper">
+                    <img src="6.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
+
+            <div class="story-card">
+                <div class="story-img-wrapper">
+                    <img src="7.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
+
+            <div class="story-card reverse">
+                <div class="story-img-wrapper">
+                    <img src="8.jpg" alt="可爱奶龙">
+                </div>
+                <div class="story-text">
+                    <h3>可爱奶龙</h3>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <footer>
         <p>💛 本网页由超级喜欢奶龙的粉丝倾情制作 💛</p>
     </footer>
 
+    <script>
+        function startExperience() {
+            // 获取视频元素并播放
+            const video = document.getElementById('bg-video');
+            video.play().catch(error => {
+                console.log("浏览器拦截了自动播放:", error);
+            });
+
+            // 获取欢迎屏幕，设置渐隐动画
+            const welcomeScreen = document.getElementById('welcome-screen');
+            welcomeScreen.style.opacity = '0';
+
+            // 动画结束后，将欢迎屏幕彻底隐藏，不再阻挡用户点击网页
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+            }, 600); // 600ms 和 CSS 中的 transition 时间保持一致
+        }
+    </script>
 </body>
 </html>
