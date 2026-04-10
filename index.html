@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奶龙 Nailong - 超级无敌可爱的小黄龙</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', '幼圆', 'PingFang SC', sans-serif;
+        }
+
+        body {
+            background-color: #FFF9E6; /* 淡淡的奶油黄背景 */
+            color: #5D4037; /* 温暖的深棕色字体 */
+            line-height: 1.6;
+        }
+
+        /* 顶部导航条 */
+        header {
+            background-color: #FFC107; /* 奶龙主题黄 */
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h2 {
+            color: #FFFFFF;
+            text-shadow: 2px 2px 0px #FF9800;
+            letter-spacing: 2px;
+        }
+
+        /* 欢迎头图区域 */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #FFD54F 0%, #FFB300 100%);
+            color: white;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            text-shadow: 3px 3px 0px #F57C00;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            font-weight: bold;
+        }
+
+        /* 图片占位符（你可以换成真实的奶龙图片） */
+        .nailong-avatar {
+            width: 200px;
+            height: 200px;
+            background-color: #FFFFFF;
+            border: 8px solid #FFF;
+            border-radius: 50%;
+            margin: 1rem 0;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #FFB300;
+            font-weight: bold;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .nailong-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .nailong-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 核心内容区 */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: #FF9800;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background-color: #FF9800;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* 卡片网格 */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            border-top: 5px solid #FFC107;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(255, 193, 7, 0.2);
+        }
+
+        .card h3 {
+            color: #F57C00;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #5D4037;
+            color: #D7CCC8;
+            margin-top: 3rem;
+        }
+
+        /* 简单的弹跳动画 */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>🐉 奶龙粉丝乐园</h2>
+    </header>
+
+    <div class="hero">
+        <div class="nailong-avatar">
+            脑补一只奶龙
+        </div>
+        <h1>奶龙 (Nailong)</h1>
+        <p>“我是宇宙无敌可爱的奶龙！嗷呜~”</p>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">关于奶龙</h2>
+        <p style="text-align: center; font-size: 1.1rem; margin-bottom: 2rem;">
+            奶龙是一只拥有着黄色胖嘟嘟身体、性格乐观开朗的异星小龙。它因为飞船发生故障而意外降落地球，结识了天才少年小七。从此，这对欢喜冤家开启了一系列爆笑又温馨的冒险日常！
+        </p>
+
+        <h2 class="section-title">性格与特征</h2>
+        <div class="features">
+            <div class="card">
+                <h3>🍔 顶级吃货</h3>
+                <p>看到美食就走不动路！无论遇到什么困难，只要有一顿好吃的就能瞬间满血复活。肚子永远像个无底洞。</p>
+            </div>
+            <div class="card">
+                <h3>💛 呆萌乐观</h3>
+                <p>脑回路清奇，经常做一些让人啼笑皆非的蠢事，但天生乐观派，遇到挫折也绝不气馁，总是笑嘻嘻的。</p>
+            </div>
+            <div class="card">
+                <h3>🤝 重情重义</h3>
+                <p>虽然经常坑队友（尤其是小七），但在关键时刻绝对靠谱。为了保护好朋友，奶龙会爆发出惊人的力量！</p>
+            </div>
+            <div class="card">
+                <h3>✨ 肉嘟嘟属性</h3>
+                <p>拥有像果冻一样Q弹的黄色大肚皮，走起路来一晃一晃的，让人忍不住想捏一捏！</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>本网页为奶龙粉丝出于喜爱制作，非官方出品。继续保持可爱呀！💛</p>
+    </footer>
+
+</body>
+</html>
