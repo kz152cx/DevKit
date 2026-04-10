@@ -163,7 +163,7 @@
             }
         }
 
-        /* 页脚与隐藏视频区域 */
+        /* 页脚区域 */
         footer {
             text-align: center;
             padding: 40px;
@@ -172,19 +172,6 @@
             font-size: 1.2em;
             font-weight: bold;
             border-top: 8px dashed var(--primary-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* 控制视频 20*20 的样式 */
-        .tiny-video {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%; /* 做成小圆点，不容易被发现 */
-            object-fit: cover;
-            opacity: 0.5; /* 半透明，更好地隐藏在背景里 */
         }
     </style>
 </head>
@@ -276,23 +263,24 @@
 
     <footer>
         <p>💛 本网页由超级喜欢奶龙的粉丝倾情制作 💛</p>
-        <video id="bg-video" src="a.mp4" autoplay loop class="tiny-video"></video>
     </footer>
+
+    <audio id="bg-music" src="1.mp3" autoplay loop></audio>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('bg-video');
+            const audio = document.getElementById('bg-music');
             
             // 尝试在页面加载时自动播放
-            let playPromise = video.play();
+            let playPromise = audio.play();
             
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
                     console.log("浏览器拦截了自动播放，等待用户第一次点击...");
                     // 如果被拦截，监听用户的第一次点击操作（点击屏幕任何地方都可以）
                     document.body.addEventListener('click', function() {
-                        if (video.paused) {
-                            video.play();
+                        if (audio.paused) {
+                            audio.play();
                         }
                     }, { once: true }); // once: true 保证这个事件只触发一次
                 });
