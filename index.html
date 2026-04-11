@@ -2,290 +2,1153 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>超萌奶龙 - 宇宙无敌小可爱</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>梦幻奶龙数字艺术馆 - 宇宙无敌呆萌小可爱</title>
     <style>
-        /* 奶龙专属超级可爱调色板 */
+        /* -----------------------------------------------------------
+           1. 全局样式 & CSS 变量 (优雅的基础)
+           ----------------------------------------------------------- */
         :root {
-            --primary-color: #FFD700; /* 纯正奶龙黄 */
-            --secondary-color: #FF8C00; /* 更有活力的暖橙 */
-            --text-color: #5C4033; /* 浓郁的巧克力色文字 */
-            --card-bg: #FFFFFF;
+            /* 奶龙核心色板 - 调和了柔和度，更显优雅 */
+            --color-main-y: #FFD700;       /* 活力奶龙黄 */
+            --color-soft-y: #FFF8DC;       /* 奶油色背景 */
+            --color-deep-o: #FF8C00;       /* 深橙色修饰 */
+            --color-soft-o: #FFE4B5;       /* 柔橙色边框 */
+            --color-pink-a: #FFB6C1;       /* 梦幻粉点缀 */
+            --color-blue-a: #87CEEB;       /* 天蓝色点缀 */
+            --color-text: #5C4033;         /* 巧克力棕文字 */
+            --color-white: #FFFFFF;
+            
+            /* 字体族 */
+            --font-fancy: 'Comic Sans MS', 'Kurimoti', 'Microsoft YaHei', sans-serif;
+            --font-body: 'Helvetica Neue', Helvetica, Arial, 'Microsoft YaHei', sans-serif;
+
+            /* 阴影 & 动画时间 */
+            --shadow-soft: 0 10px 30px rgba(210, 105, 30, 0.1);
+            --shadow-card: 0 15px 45px rgba(210, 105, 30, 0.2);
+            --shadow-text: 3px 3px 0px rgba(255, 140, 0, 0.6);
+            --transition-main: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1); /* 经典的优雅缓动 */
+            --transition-fast: all 0.2s ease;
         }
 
-        body {
-            font-family: 'Comic Sans MS', 'Microsoft YaHei', sans-serif;
-            color: var(--text-color);
+        /* 极简重置 */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        html, body {
             margin: 0;
             padding: 0;
-            line-height: 1.8;
-            /* 奶龙专属波点背景，增加卡通感 */
-            background-color: #FFFDF0;
-            background-image: radial-gradient(#FFE4B5 20%, transparent 20%),
-                              radial-gradient(#FFE4B5 20%, transparent 20%);
-            background-position: 0 0, 30px 30px;
-            background-size: 60px 60px;
-        }
-
-        /* 头部大封面区域 */
-        header {
-            background-color: var(--primary-color);
-            text-align: center;
-            padding: 60px 20px 40px;
-            /* 波浪形底部边框加上厚重的阴影 */
-            border-bottom: 12px dashed var(--secondary-color);
-            box-shadow: 0 10px 25px rgba(255, 140, 0, 0.3);
-            position: relative;
-        }
-
-        header h1 {
-            font-size: 3.8em;
-            margin: 0;
-            color: #FFFFFF;
-            /* 更有立体感的卡通文字阴影 */
-            text-shadow: 4px 4px 0px var(--secondary-color), 6px 6px 0px #D2691E;
-            letter-spacing: 3px;
-        }
-
-        header p {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 30px;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden; /* 防止横向滚动 */
+            background-color: var(--color-soft-y);
+            font-family: var(--font-body);
             color: var(--text-color);
-            background: rgba(255, 255, 255, 0.6);
-            display: inline-block;
-            padding: 5px 20px;
-            border-radius: 30px;
+            -webkit-font-smoothing: antialiased;
+            cursor: none; /* 隐藏默认光标，使用自定义光标 */
         }
 
-        .hero-img {
-            max-width: 100%;
-            width: 480px;
-            height: auto;
-            border-radius: 50%; /* 主图变成彻底的圆滚滚 */
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            border: 12px solid white;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* 美化滚动条 */
+        ::-webkit-scrollbar { width: 10px; background: var(--color-soft-y); }
+        ::-webkit-scrollbar-thumb { background: var(--color-main-y); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-deep-o); }
+
+        /* 基础排版 */
+        h1, h2, h3 { font-family: var(--font-fancy); font-weight: bold; margin: 0; }
+        p { margin: 0; font-size: 1.1em; line-height: 1.8; }
+        img { max-width: 100%; height: auto; display: block; }
+
+        /* -----------------------------------------------------------
+           2. 核心动态元件 - 粒子背景、自定义光标
+           ----------------------------------------------------------- */
+        /* Canvas 粒子背景 */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* 在所有内容下方 */
+            opacity: 0.6;
         }
 
-        .hero-img:hover {
-            transform: scale(1.08) rotate(-5deg);
+        /* 自定义光标 */
+        #custom-cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🐾</text></svg>'); /* 龙爪 SVG */
+            background-size: cover;
+            pointer-events: none; /* 不妨碍点击 */
+            z-index: 10000; /* 最高层 */
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s linear; /* 极快的跟手速度 */
         }
 
-        /* 内容容器 */
+        .cursor-trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--color-main-y);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.8;
+            transform: translate(-50%, -50%);
+        }
+
+        /* -----------------------------------------------------------
+           3. 3D 视角欢迎页 (入口互动)
+           ----------------------------------------------------------- */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--color-main-y);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999;
+            perspective: 1000px; /* 开启 3D 空间 */
+            transition: opacity 1s ease, visibility 1s;
+        }
+
+        #welcome-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .welcome-egg {
+            width: 200px; height: 260px;
+            background: var(--color-white);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* 蛋形 */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d; /* 内部元素支持 3D */
+            animation: eggFloat 4s infinite ease-in-out;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes eggFloat {
+            0%, 100% { transform: translateY(0) rotateX(0deg); }
+            50% { transform: translateY(-30px) rotateX(10deg); }
+        }
+
+        .welcome-egg:hover {
+            transform: scale(1.1) rotateY(20deg);
+        }
+
+        .welcome-egg::after {
+            content: "?点击解封?";
+            position: absolute;
+            bottom: -50px; left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-fancy);
+            color: var(--color-white);
+            font-size: 1.5em;
+            text-shadow: var(--shadow-text);
+            white-space: nowrap;
+        }
+
+        .welcome-dragon-icon {
+            font-size: 100px;
+            transform: translateZ(50px); /* 悬浮在蛋表面之上 */
+        }
+
+        /* 欢迎页标题 */
+        .welcome-title {
+            position: absolute;
+            top: 10vh;
+            font-size: 3em;
+            color: white;
+            font-family: var(--font-fancy);
+            text-shadow: var(--shadow-text);
+            animation: textPulse 2s infinite;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        /* -----------------------------------------------------------
+           4. 页面头部 (Hero Section) - 动态文字路径 & 视差
+           ----------------------------------------------------------- */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 110vh; /* 稍微高一点，用于视差效果 */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 100px;
+            z-index: 10;
+        }
+
+        /* 视差背景块 */
+        .hero-bg-shapes {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+        .shape { position: absolute; border-radius: 50%; opacity: 0.5; }
+        .shape-1 { width: 400px; height: 400px; background: var(--color-soft-o); top: -100px; left: -100px; }
+        .shape-2 { width: 300px; height: 300px; background: var(--color-pink-a); bottom: 100px; right: -50px; }
+        .shape-3 { width: 200px; height: 200px; background: var(--color-blue-a); top: 200px; right: 20%; }
+
+        /* SVG 动态文字路径 */
+        .hero-svg-title {
+            width: 80%;
+            max-width: 800px;
+            height: 150px;
+            margin-bottom: 30px;
+        }
+
+        .hero-svg-title text {
+            font-family: var(--font-fancy);
+            font-size: 60px;
+            font-weight: bold;
+            fill: none;
+            stroke: var(--color-deep-o);
+            stroke-width: 2px;
+            stroke-dasharray: 10, 10; /* 虚线效果 */
+            animation: pathAnimate 10s infinite linear; /* 文字沿路径流动 */
+        }
+
+        @keyframes pathAnimate {
+            to { stroke-dashoffset: 200; fill: var(--color-deep-o); }
+        }
+
+        .hero p {
+            font-family: var(--font-fancy);
+            font-size: 1.6em;
+            color: var(--color-text);
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 30px;
+            border-radius: 50px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 50px;
+        }
+
+        /* 主视觉图容器 - 用于高精度的视差和悬停动画 */
+        .hero-img-parallax-container {
+            position: relative;
+            width: 550px;
+            perspective: 2000px; /* 3D 视角 */
+            z-index: 5;
+        }
+
+        .hero-img-parallax-container img {
+            width: 100%;
+            border-radius: 50%; /* 圆滚滚 */
+            border: 15px solid var(--color-white);
+            box-shadow: var(--shadow-card);
+            transition: transform 0.1s linear; /* 极其跟手的悬停 */
+        }
+
+        /* 装饰元素：围绕主图漂浮的小图标 */
+        .deco-icon { position: absolute; font-size: 3em; z-index: 10; animation: iconFloat 3s infinite ease-in-out; }
+        .icon-burger { top: 10%; left: -50px; animation-delay: 0s; }
+        .icon-chicken { bottom: 20%; right: -60px; animation-delay: 0.5s; }
+        .icon-star { top: 50%; left: -80px; font-size: 2em; color: var(--color-main-y); animation-delay: 1s; }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(15deg); }
+        }
+
+        /* -----------------------------------------------------------
+           5. 经典故事卡片部分 (1.jpg - 8.jpg) - 3D Tilt & Scroll Animate
+           ----------------------------------------------------------- */
+        .story-section {
+            padding: 100px 0;
+            position: relative;
+            z-index: 10;
+        }
+
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 50px 20px;
+            padding: 0 20px;
         }
 
-        /* 分开排布的故事卡片样式 */
         .story-timeline {
             display: flex;
             flex-direction: column;
-            gap: 60px;
+            gap: 100px; /* 大间距 */
         }
 
+        /* JS 滚动动画基类 */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .scroll-animate.animated {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* 卡片主体 */
         .story-card {
             display: flex;
             align-items: center;
-            background: var(--card-bg);
-            border-radius: 40px; /* 更夸张的圆角 */
-            padding: 25px;
-            gap: 40px;
-            box-shadow: 0 15px 30px rgba(255, 165, 0, 0.15);
-            /* 更粗的卡通风边框 */
-            border: 5px solid var(--primary-color);
-            transition: all 0.4s ease;
+            background: var(--color-white);
+            border-radius: 50px; /* 夸张的圆角 */
+            padding: 40px;
+            gap: 50px;
+            box-shadow: var(--shadow-card);
+            border: 8px solid var(--color-main-y);
+            position: relative;
+            overflow: hidden; /* 裁剪内部动态高光 */
+            transform-style: preserve-3d; /* 内部支持 3D Tilt */
+            transition: box-shadow 0.3s ease;
         }
 
         .story-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--secondary-color);
-            box-shadow: 0 20px 40px rgba(255, 140, 0, 0.25);
+            box-shadow: 0 30px 60px rgba(255, 140, 0, 0.3);
         }
 
-        .story-card.reverse {
+        /* JS 3D Tilt 会动态修改此元素的 transform */
+        .story-card-inner {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            width: 100%;
+        }
+
+        .story-card.reverse .story-card-inner {
             flex-direction: row-reverse;
+        }
+
+        /* 卡片内的高光闪烁效果 (纯 CSS) */
+        .story-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(
+                45deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0) 40%,
+                rgba(255,255,255,0.6) 50%,
+                rgba(255,255,255,0) 60%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(-45deg);
+            transition: none;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .story-card:hover::before {
+            animation: shimmer 1.5s infinite;
+            opacity: 1;
+        }
+        @keyframes shimmer {
+            0% { transform: translate(-30%, -30%) rotate(-45deg); }
+            100% { transform: translate(30%, 30%) rotate(-45deg); }
         }
 
         .story-img-wrapper {
             flex: 0 0 50%;
+            position: relative;
+            transform-style: preserve-3d;
         }
 
         .story-img-wrapper img {
             width: 100%;
-            height: 350px;
+            height: 400px;
             object-fit: cover;
-            border-radius: 30px;
-            border: 4px dashed #FFE4B5;
+            border-radius: 40px;
+            border: 5px dashed var(--color-soft-o);
+            transform: translateZ(30px); /* 悬浮效果 */
         }
 
         .story-text {
             flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             text-align: center;
+            transform-style: preserve-3d;
         }
 
         .story-text h3 {
-            color: var(--secondary-color);
-            font-size: 2.8em;
+            color: var(--color-deep-o);
+            font-size: 3.5em;
             margin: 0;
-            background: var(--primary-color);
+            display: inline-block;
+            background: var(--color-main-y);
             color: white;
-            padding: 10px 30px;
+            padding: 10px 40px;
             border-radius: 50px;
-            text-shadow: 2px 2px 0px var(--secondary-color);
-            transform: rotate(-2deg); /* 文字稍微倾斜，更调皮 */
+            text-shadow: var(--shadow-text);
+            transform: translateZ(50px) rotate(-3deg); /* 悬浮 & 倾斜 */
+            box-shadow: var(--shadow-soft);
         }
 
         .story-card.reverse .story-text h3 {
-            transform: rotate(2deg);
+            transform: translateZ(50px) rotate(3deg);
         }
 
-        /* 手机屏幕适配 */
-        @media (max-width: 768px) {
-            .story-card, .story-card.reverse {
-                flex-direction: column;
-                padding: 20px;
-            }
-            .story-img-wrapper {
-                width: 100%;
-            }
-            .story-img-wrapper img {
-                height: auto;
-            }
-            .story-text h3 {
-                margin-top: 20px;
-                font-size: 2.2em;
-            }
+        /* 装饰用 SVG 波浪线条 */
+        .card-deco-wave {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 40px;
+            fill: var(--color-soft-o);
+            opacity: 0.7;
+            z-index: -1;
         }
 
-        /* 页脚区域 */
+        /* 响应式调整 */
+        @media (max-width: 992px) {
+            .story-card-inner, .story-card.reverse .story-card-inner { flex-direction: column; text-align: center; }
+            .story-img-wrapper { width: 100%; }
+            .story-img-wrapper img { height: auto; }
+            .story-text h3 { font-size: 2.8em; margin-top: 20px; }
+            .hero-svg-title text { font-size: 45px; }
+            .hero-img-parallax-container { width: 90%; max-width: 400px; }
+        }
+
+        /* -----------------------------------------------------------
+           6. 梦幻漂浮画廊部分 (A1.jpg - A19.jpg) - 核心酷炫点
+           ----------------------------------------------------------- */
+        .bubble-gallery-section {
+            width: 100%;
+            height: 150vh; /* 巨大的画布空间 */
+            position: relative;
+            overflow: hidden;
+            background-color: #FFFDF0;
+            border-top: 15px dashed var(--color-blue-a);
+            border-bottom: 15px dashed var(--color-pink-a);
+            z-index: 5;
+        }
+
+        .gallery-title-area {
+            position: sticky; /* 粘性标题，随着滚动停留在视口 */
+            top: 10vh;
+            width: 100%;
+            text-align: center;
+            z-index: 20;
+            pointer-events: none; /* 不妨碍点击后面的气泡 */
+        }
+
+        .gallery-title-area h2 {
+            font-size: 4em;
+            color: white;
+            background: var(--color-blue-a);
+            display: inline-block;
+            padding: 15px 50px;
+            border-radius: 100px;
+            text-shadow: 4px 4px 0px rgba(70, 130, 180, 0.6);
+            box-shadow: var(--shadow-card);
+        }
+
+        /* 这里的容器将由 JS 动态填充 A(1)-A(19) 的图片气泡 */
+        #bubble-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        /* 动态生成的气泡的基础样式 */
+        .nailong-bubble {
+            position: absolute;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 10px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 10px 30px rgba(135, 206, 235, 0.3);
+            cursor: pointer;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        box-shadow 0.3s ease,
+                        width 0.3s ease, height 0.3s ease;
+            z-index: 10;
+            /* 基础漂浮动画 - 将在 JS 中被个性化修改 */
+            animation: bubbleFloatBase infinite ease-in-out;
+        }
+
+        @keyframes bubbleFloatBase {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -15px) rotate(5deg); }
+            50% { transform: translate(-10px, -20px) rotate(-5deg); }
+            75% { transform: translate(-15px, -10px) rotate(3deg); }
+        }
+
+        /* 悬停时的“爆裂预警”效果：变大、停止漂浮、增加光晕 */
+        .nailong-bubble:hover {
+            z-index: 100; /* 升至最前 */
+            box-shadow: 0 20px 60px rgba(135, 206, 235, 0.8);
+            border-color: var(--color-white);
+            animation-play-state: paused !important; /* 核心：鼠标悬停停止漂浮 */
+            /* JS 将在悬停时动态修改 scale */
+        }
+
+        .nailong-bubble img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* 裁剪填充圆圈 */
+            transition: transform 0.6s ease;
+        }
+        
+        .nailong-bubble:hover img {
+            transform: scale(1.1); /* 图片内部轻微放大 */
+        }
+
+        /* -----------------------------------------------------------
+           7. 页脚区域 (Footer)
+           ----------------------------------------------------------- */
         footer {
             text-align: center;
-            padding: 40px;
-            background-color: var(--secondary-color);
+            padding: 80px 20px;
+            background-color: var(--color-deep-o);
             color: white;
-            font-size: 1.2em;
+            font-size: 1.4em;
             font-weight: bold;
-            border-top: 8px dashed var(--primary-color);
+            font-family: var(--font-fancy);
+            border-top: 10px wavy var(--color-main-y);
+            position: relative;
+            z-index: 10;
         }
+
+        .footer-deco {
+            position: absolute;
+            top: -30px; left: 50%; transform: translateX(-50%);
+            font-size: 3em;
+        }
+
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>🐉 奶龙日记 🐉</h1>
-        <p>捕捉一只野生小可爱！</p>
-        <img src="ph.jpg" alt="奶龙主视觉图" class="hero-img">
-    </header>
+    <div id="custom-cursor"></div>
+    
+    <canvas id="particle-canvas"></canvas>
 
-    <div class="container">
-        <div class="story-timeline">
-            
-            <div class="story-card">
-                <div class="story-img-wrapper">
-                    <img src="1.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
+    <audio id="bg-music" src="1.mp3" loop></audio>
 
-            <div class="story-card reverse">
-                <div class="story-img-wrapper">
-                    <img src="2.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
-
-            <div class="story-card">
-                <div class="story-img-wrapper">
-                    <img src="3.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
-
-            <div class="story-card reverse">
-                <div class="story-img-wrapper">
-                    <img src="4.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
-
-            <div class="story-card">
-                <div class="story-img-wrapper">
-                    <img src="5.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
-
-            <div class="story-card reverse">
-                <div class="story-img-wrapper">
-                    <img src="6.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
-
-            <div class="story-card">
-                <div class="story-img-wrapper">
-                    <img src="7.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
-
-            <div class="story-card reverse">
-                <div class="story-img-wrapper">
-                    <img src="8.jpg" alt="可爱奶龙">
-                </div>
-                <div class="story-text">
-                    <h3>可爱奶龙</h3>
-                </div>
-            </div>
-
+    <div id="welcome-screen">
+        <h1 class="welcome-title">解封梦幻奶龙...</h1>
+        <div class="welcome-egg" id="start-btn">
+            <span class="welcome-dragon-icon">🐉</span>
         </div>
     </div>
 
+    <main id="main-content">
+
+        <header class="hero">
+            <div class="hero-bg-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+
+            <svg class="hero-svg-title" viewBox="0 0 800 120">
+                <path id="heading-path" d="M 50,80 C 150,20 250,140 350,80 C 450,20 550,140 650,80" fill="none"/>
+                <text>
+                    <textPath xlink:href="#heading-path" startOffset="0%">🐉 梦幻奶龙日记 🐉</textPath>
+                </text>
+            </svg>
+            
+            <p>捕捉一只宇宙无敌呆萌小可爱！</p>
+            
+            <div class="hero-img-parallax-container js-parallax-hero" id="hero-img-box">
+                <span class="deco-icon icon-burger">🍔</span>
+                <span class="deco-icon icon-chicken">🍗</span>
+                <span class="deco-icon icon-star">⭐</span>
+                <img src="ph.jpg" alt="奶龙主视觉图">
+            </div>
+        </header>
+
+        <section class="story-section">
+            <div class="container">
+                <div class="story-timeline">
+                    
+                    <div class="story-card scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="1.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                            <svg class="card-deco-wave" viewBox="0 0 100 20"><path d="M0,10 C30,20 70,0 100,10 L100,20 L0,20 Z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="story-card reverse scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="2.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                            <svg class="card-deco-wave" viewBox="0 0 100 20"><path d="M0,10 C30,20 70,0 100,10 L100,20 L0,20 Z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="story-card scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="3.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-card reverse scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="4.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-card scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="5.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-card reverse scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="6.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-card scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="7.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="story-card reverse scroll-animate js-tilt-card">
+                        <div class="story-card-inner">
+                            <div class="story-img-wrapper">
+                                <img src="8.jpg" alt="可爱奶龙">
+                            </div>
+                            <div class="story-text">
+                                <h3>可爱奶龙</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="bubble-gallery-section scroll-animate">
+            <div class="gallery-title-area">
+                <h2>梦幻泡泡展</h2>
+            </div>
+            
+            <div id="bubble-container"></div>
+        </section>
+
+    </main>
+
     <footer>
-        <p>💛 本网页由超级喜欢奶龙的粉丝倾情制作 💛</p>
+        <span class="footer-deco">✨</span>
+        <p>💛 感谢来到梦幻奶龙的数字艺术世界 💛</p>
+        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 20px;">倾情制作 · 酷炫满分</p>
     </footer>
 
-    <audio id="bg-music" src="1.mp3" autoplay loop></audio>
 
     <script>
+        /**
+         * 梦幻奶龙网页交互引擎
+         * 包含：粒子系统、自定义光标、视差滚动、JS滚动动画、3D倾斜、无限漂浮气泡
+         */
+
+        // 统一缓动函数，用于 JS 动画
+        const Easing = {
+            easeOutCubic: t => (--t) * t * t + 1,
+            easeOutQuart: t => 1 - (--t) * t * t * t,
+            easeOutElastic: t => t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * 2 * Math.PI / 3) + 1
+        };
+
+        // =========================================================
+        // 1. 全局状态 & 初始化
+        // =========================================================
+        const state = {
+            isExperienceStarted: false,
+            mouseX: 0,
+            mouseY: 0,
+            windowWidth: window.innerWidth,
+            windowHeight: window.innerHeight,
+            scrollY: 0
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
-            const audio = document.getElementById('bg-music');
+            console.log("梦幻奶龙引擎启动...");
+            updateState();
+            initCustomCursor();
+            initParticleBackground();
+            initBubbleGallery(); // 重点：生成 A(1)-A(19) 图片
+            initScrollAnimations();
+            initTiltCards();
+            initParallaxHero();
             
-            // 尝试在页面加载时自动播放
-            let playPromise = audio.play();
+            // 监听窗口大小改变和鼠标移动
+            window.addEventListener('resize', updateState);
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('scroll', handleScroll);
+        });
+
+        function updateState() {
+            state.windowWidth = window.innerWidth;
+            state.windowHeight = window.innerHeight;
+        }
+
+        function handleMouseMove(e) {
+            state.mouseX = e.clientX;
+            state.mouseY = e.clientY;
+        }
+        
+        function handleScroll() {
+            state.scrollY = window.pageYOffset;
+        }
+
+        // =========================================================
+        // 2. 核心：启动体验 (欢迎页点击)
+        // =========================================================
+        const startBtn = document.getElementById('start-btn');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const bgMusic = document.getElementById('bg-music');
+
+        startBtn.addEventListener('click', () => {
+            if (state.isExperienceStarted) return;
+            state.isExperienceStarted = true;
+            console.log("奶龙已解封！");
+
+            // 播放音乐
+            bgMusic.play().catch(error => {
+                console.log("浏览器拦截音乐播放，等待下一步用户交互:", error);
+            });
+
+            // 移除欢迎屏幕 (1s 渐隐动画在 CSS)
+            welcomeScreen.classList.add('hidden');
             
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("浏览器拦截了自动播放，等待用户第一次点击...");
-                    // 如果被拦截，监听用户的第一次点击操作（点击屏幕任何地方都可以）
-                    document.body.addEventListener('click', function() {
-                        if (audio.paused) {
-                            audio.play();
-                        }
-                    }, { once: true }); // once: true 保证这个事件只触发一次
+            // 移除欢迎页阻止滚动的限制
+            document.body.style.overflow = 'auto'; 
+            
+            // 延迟彻底隐藏欢迎页，防止妨碍主页交互
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+            }, 1000);
+        });
+
+        // =========================================================
+        // 3. 酷炫：自定义光标拖尾
+        // =========================================================
+        function initCustomCursor() {
+            const cursor = document.getElementById('custom-cursor');
+            const trails = [];
+            const trailCount = 10; // 尾巴长度
+
+            // 创建拖尾元件
+            for (let i = 0; i < trailCount; i++) {
+                const tr = document.createElement('div');
+                tr.className = 'cursor-trail';
+                document.body.appendChild(tr);
+                trails.push({
+                    el: tr,
+                    x: 0, y: 0,
+                    scale: 1 - (i / trailCount) // 越靠后越小
                 });
             }
-        });
+
+            let lastMouseX = 0, lastMouseY = 0;
+
+            // 核心动画循环 (requestAnimationFrame)
+            function animateCursor() {
+                // 核心光标跟手 (快)
+                const targetX = state.mouseX;
+                const targetY = state.mouseY;
+                
+                // 轻微缓动，看起来更优雅
+                lastMouseX += (targetX - lastMouseX) * 0.3;
+                lastMouseY += (targetY - lastMouseY) * 0.3;
+
+                cursor.style.left = `${lastMouseX}px`;
+                cursor.style.top = `${lastMouseY}px`;
+
+                // 拖尾算法 (后一个追前一个)
+                let leaderX = lastMouseX;
+                let leaderY = lastMouseY;
+
+                trails.forEach((trail, index) => {
+                    trail.x += (leaderX - trail.x) * 0.4;
+                    trail.y += (leaderY - trail.y) * 0.4;
+                    
+                    trail.el.style.left = `${trail.x}px`;
+                    trail.el.style.top = `${trail.y}px`;
+                    
+                    // 动态修改 scale
+                    trail.el.style.transform = `translate(-50%, -50%) scale(${trail.scale})`;
+                    
+                    // 越往后透明度越低
+                    trail.el.style.opacity = trail.scale * 0.6;
+
+                    // 更新 leader 为当前位置，供下一个拖尾追随
+                    leaderX = trail.x;
+                    leaderY = trail.y;
+                });
+
+                requestAnimationFrame(animateCursor);
+            }
+
+            animateCursor(); // 启动循环
+        }
+
+        // =========================================================
+        // 4. 美丽：Canvas 粒子背景系统
+        // =========================================================
+        function initParticleBackground() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let particles = [];
+            const particleCount = 60; // 粒子数量
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // 粒子类定义
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 15 + 5; // 尺寸 5-20
+                    this.speedY = Math.random() * -0.8 - 0.2; // 缓慢向上漂浮
+                    this.speedX = (Math.random() - 0.5) * 0.3; // 轻微横向漂移
+                    this.opacity = Math.random() * 0.5 + 0.1; // 透明度 0.1-0.6
+                    // 粒子类型: 0=爱心, 1=星星
+                    this.type = Math.floor(Math.random() * 2); 
+                    this.rotation = Math.random() * Math.PI * 2;
+                    this.rotationSpeed = (Math.random() - 0.5) * 0.01;
+                }
+
+                update() {
+                    this.y += this.speedY;
+                    this.x += this.speedX;
+                    this.rotation += this.rotationSpeed;
+
+                    // 鼠标交互涟漪效果
+                    const dx = state.mouseX - this.x;
+                    const dy = state.mouseY - this.y;
+                    const distance = Math.sqrt(dx*dx + dy*dy);
+                    const forceArea = 150; // 鼠标影响范围
+
+                    if (distance < forceArea) {
+                        const force = (forceArea - distance) / forceArea;
+                        // 计算推开的方向向量
+                        const pushX = dx / distance * force * 1.5;
+                        const pushY = dy / distance * force * 1.5;
+                        // 缓慢推开
+                        this.x -= pushX;
+                        this.y -= pushY;
+                    }
+
+                    // 边界检查：飘出顶部重新从底部生成
+                    if (this.y < -this.size || this.x < -this.size || this.x > canvas.width + this.size) {
+                        if (Math.random() < 0.9) { // 大概率从底部重新生成
+                            this.y = canvas.height + this.size;
+                            this.x = Math.random() * canvas.width;
+                        } else { // 小概率重置所有
+                            this.reset();
+                        }
+                    }
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation);
+                    ctx.globalAlpha = this.opacity;
+                    ctx.fillStyle = (this.type === 0) ? '#FFB6C1' : '#FFD700'; // 粉色心，黄色星
+
+                    if (this.type === 0) {
+                        this.drawHeart();
+                    } else {
+                        this.drawStar();
+                    }
+                    ctx.restore();
+                }
+
+                // 精细的爱心绘制算法
+                drawHeart() {
+                    ctx.beginPath();
+                    const s = this.size / 20; // 缩放比例
+                    ctx.moveTo(10*s, 3*s);
+                    ctx.bezierCurveTo(10*s, 2.5*s, 9.5*s, 0, 5*s, 0);
+                    ctx.bezierCurveTo(-1*s, 0, -1*s, 11*s, 10*s, 19*s); // 尖端
+                    ctx.bezierCurveTo(21*s, 11*s, 21*s, 0, 15*s, 0);
+                    ctx.bezierCurveTo(11.5*s, 0, 10*s, 2.5*s, 10*s, 3*s);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+
+                // 精细的五角星绘制算法
+                drawStar() {
+                    ctx.beginPath();
+                    const p = 5; // 五角星
+                    const r = this.size / 2;
+                    const innerR = r * 0.4;
+                    for (let i = 0; i < p * 2; i++) {
+                        const angle = Math.PI / p * i - Math.PI / 2;
+                        const currR = (i % 2 === 0) ? r : innerR;
+                        ctx.lineTo(Math.cos(angle) * currR, Math.sin(angle) * currR);
+                    }
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+
+            // 初始化粒子池
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空 Canvas
+
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+
+                requestAnimationFrame(animateParticles);
+            }
+
+            animateParticles(); // 启动循环
+        }
+
+        // =========================================================
+        // 5. 核心酷炫：动态生成无限漂浮气泡画廊 (A1-A19)
+        // =========================================================
+        function initBubbleGallery() {
+            const container = document.getElementById('bubble-container');
+            const imageCount = 19; // A(1).jpg 到 A(19).jpg
+            const bubbles = [];
+
+            // 1. 动态生成 HTML 结构
+            for (let i = 1; i <= imageCount; i++) {
+                const bubbleEl = document.createElement('div');
+                bubbleEl.className = 'nailong-bubble scroll-animate'; // 添加 JS 滚动动画基类
+                bubbleEl.setAttribute('data-index', i);
+
+                const imgEl = document.createElement('img');
+                imgEl.src = `A(${i}).jpg`; // 严格匹配命名 A(1).jpg
+                imgEl.alt = `梦幻奶龙 ${i}`;
+
+                // 处理图片加载失败（防止代码报错影响其他气泡）
+                imgEl.onerror = function() {
+                    bubbleEl.style.display = 'none'; // 隐藏加载失败的气泡
+                    console.warn(`图片 A(${i}).jpg 加载失败，已隐藏该气泡。`);
+                };
+
+                bubbleEl.appendChild(imgEl);
+                container.appendChild(bubbleEl);
+                bubbles.push(bubbleEl);
+            }
+
+            // 2. JS 随机初始化气泡的位置、大小、运动参数
+            bubbles.forEach((bubble, index) => {
+                // 随机尺寸 (120px - 280px)
+                const size = Math.random() * 160 + 120;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+
+                // 核心：设置随机漂浮动画 (在 CSS 定义的基础动画上个性化)
+                const duration = Math.random() * 6 + 4; // 周期 4s - 10s
+                const delay = Math.random() * -10;     // 随机负延迟，打乱初始节奏
+                
+                // 随机选择一个漂浮轨迹变体 (CSS 定义多个 variants 用于增加复杂性)
+                // 为保持代码简洁，这里在 JS 中直接修改 transform 向量
+                const randX = (Math.random() - 0.5) * 20; // X 轴偏移范围 +-20px
+                const randY = Math.random() * -30 - 10;   // Y 轴漂浮范围 -10px 到 -40px
+                const randR = (Math.random() - 0.5) * 10; // 旋转 +-5deg
+                
+                // 动态创建一个唯一的 Keyframe (通过 CSS Rule 注入，这里用简单的随机偏移替代)
+                bubble.style.animationName = 'bubbleFloatBase'; // 使用 CSS 定义的基础基础
+                bubble.style.animationDuration = `${duration}s`;
+                bubble.style.animationDelay = `${delay}s`;
+                
+                // 随机初始位置 (在画廊区域内)
+                const posX = Math.random() * (state.windowWidth - size - 40) + 20; // 留 20px 边距
+                const posY = Math.random() * (container.offsetHeight - size - 40) + 20;
+                bubble.style.left = `${posX}px`;
+                bubble.style.top = `${posY}px`;
+
+                // 随机边框颜色 (黄色系/粉色系/蓝色系)
+                const colors = ['#FFF', '#FFE4B5', '#FFB6C1', '#87CEEB'];
+                bubble.style.borderColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // JS 悬停交互：变大并停止运动
+                bubble.addEventListener('mouseenter', () => {
+                    bubble.style.transform = `scale(1.2) translateZ(50px)`; // 放大 & 3D 悬浮
+                });
+                
+                bubble.addEventListener('mouseleave', () => {
+                    bubble.style.transform = `scale(1) translateZ(0)`; // 还原
+                });
+            });
+        }
+
+        // =========================================================
+        // 6. GSAP 级 JS 滚动动画基类 (Intersection Observer)
+        // =========================================================
+        function initScrollAnimations() {
+            const animatedElements = document.querySelectorAll('.scroll-animate');
+
+            const observerOptions = {
+                root: null, // 使用视口作为根
+                threshold: 0.15, // 元素进入视口 15% 时触发
+                rootMargin: "0px 0px -50px 0px" // 距离底部 50px 时提前触发，感觉更优雅
+            };
+
+            const intersectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // 进入视口，添加类触发 CSS 动画
+                        const target = entry.target;
+                        
+                        // 随机回弹缓动 (原生模拟高级效果)
+                        const delays = [0, 100, 200, 300];
+                        const delay = delays[Math.floor(Math.random() * delays.length)];
+                        
+                        setTimeout(() => {
+                            target.classList.add('animated');
+                            
+                            // 针对气泡画廊部分的特殊进场动画：逐个弹入
+                            if (target.classList.contains('nailong-bubble')) {
+                                target.style.transition = `transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease`;
+                            }
+                        }, delay);
+
+                        // 动画只触发一次，移除监听以节省性能
+                        observer.unobserve(target);
+                    }
+                });
+            }, observerOptions);
+
+            animatedElements.forEach(el => {
+                intersectionObserver.observe(el);
+            });
+        }
+
+        // =========================================================
+        // 7. 高级交互：全网页视差滚动
+        // =========================================================
+        function initParallaxHero() {
+            const heroBox = document.getElementById('hero-img-box');
+            const heroImg = heroBox.querySelector('img');
+            const decoIcons = heroBox.querySelectorAll('.deco-icon');
+
+            function parallaxLoop() {
+                // 只有主页开启后才触发视差
+                if (state.isExperienceStarted && state.windowWidth > 992) {
+                    const scrolled = state.scrollY;
+                    
+                    // 头部文本缓慢视差向下移动 (CSS handle via main element padding if needed)
+                    // 主图更慢移动 (制造深邃感)
+                    const heroParallaxVal = scrolled * 0.15;
+                    heroImg.style.transform = `translateY(${heroParallaxVal}px)`;
+                    
+                    // 装饰小图标反向视差向上移动 (制造分离感)
+                    decoIcons.forEach((icon, index) => {
+                        const speed = 0.2 + (index * 0.1);
+                        icon.style.transform = `translateY(${scrolled * -speed}px)`;
+                    });
+                }
+                
+                requestAnimationFrame(parallaxLoop);
+            }
+            
+            parallaxLoop();
+        }
+
+        // =========================================================
+        // 8. 精细交互：JS 3D Tilt 卡片倾斜 (前8张图)
+        // =========================================================
+        function initTiltCards() {
+            const cards = document.querySelectorAll('.js-tilt-card');
+            if (state.windowWidth < 992) return; // 手机端禁用 3D 倾斜，防止点击误操作
+
+            cards.forEach(card => {
+                // 获取卡片内的真正元件
+                const cardInner = card.querySelector('.story-card-inner');
+
+                card.addEventListener('mousemove', (e) => {
+                    const cardRect = card.getBoundingClientRect();
+                    const cardWidth = cardRect.width;
+                    const cardHeight = cardRect.height;
+                    
+                    // 计算鼠标距离卡片中心的绝对百分比偏移 (核心 Tilt 算法)
+                    const centerX = cardRect.left + cardWidth / 2;
+                    const centerY = cardRect.top + cardHeight / 2;
+                    
+                    const mouseX = e.clientX;
+                    const mouseY = e.clientY;
+                    
+                    // 偏移百分比 +-50
+                    const percentX = (mouseX - centerX) / (cardWidth / 2) * 50; 
+                    const percentY = (mouseY - centerY) / (cardHeight / 2) * 50;
+
+                    // 设置 Tilt 参数 (旋转角度 +-10deg 保持优雅)
+                    const maxTilt = 10;
+                    const tiltX = (percentY / 50 * maxTilt).toFixed(2); // 反向旋转制造倾斜
+                    const tiltY = -(percentX / 50 * maxTilt).toFixed(2);
+
+                    // 应用 3D transform (优雅回弹动画在 CSS transition: transform 0.1s linear)
+                    cardInner.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+                });
+
+                // 鼠标离开还原
+                card.addEventListener('mouseleave', () => {
+                    // 使用 cubic-bezier 回弹，更优雅
+                    cardInner.style.transition = `transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)`;
+                    cardInner.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+                    
+                    // 还原后恢复快速度以便下一次跟手
+                    setTimeout(() => {
+                        cardInner.style.transition = `transform 0.1s linear`;
+                    }, 500);
+                });
+            });
+        }
+
     </script>
 </body>
 </html>
