@@ -1,1154 +1,1178 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>梦幻奶龙数字艺术馆 - 宇宙无敌呆萌小可爱</title>
-    <style>
-        /* -----------------------------------------------------------
-           1. 全局样式 & CSS 变量 (优雅的基础)
-           ----------------------------------------------------------- */
-        :root {
-            /* 奶龙核心色板 - 调和了柔和度，更显优雅 */
-            --color-main-y: #FFD700;       /* 活力奶龙黄 */
-            --color-soft-y: #FFF8DC;       /* 奶油色背景 */
-            --color-deep-o: #FF8C00;       /* 深橙色修饰 */
-            --color-soft-o: #FFE4B5;       /* 柔橙色边框 */
-            --color-pink-a: #FFB6C1;       /* 梦幻粉点缀 */
-            --color-blue-a: #87CEEB;       /* 天蓝色点缀 */
-            --color-text: #5C4033;         /* 巧克力棕文字 */
-            --color-white: #FFFFFF;
-            
-            /* 字体族 */
-            --font-fancy: 'Comic Sans MS', 'Kurimoti', 'Microsoft YaHei', sans-serif;
-            --font-body: 'Helvetica Neue', Helvetica, Arial, 'Microsoft YaHei', sans-serif;
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>奶龙博物馆 · 美在生活中消亡，在艺术中不朽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@200;300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   RESET & TOKENS
+============================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:       #080705;
+  --surface:  #100e09;
+  --card:     #181410;
+  --gold:     #c9aa72;
+  --gold-lt:  #e8d09a;
+  --gold-dk:  #7a6238;
+  --cream:    #ede3ce;
+  --muted:    #9a8c72;
+  --serif:    'Noto Serif SC','SimSun','宋体',serif;
+  --latin:    'Cormorant Garamond',Georgia,serif;
+  --ease-out: cubic-bezier(.22,1,.36,1);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--cream);font-family:var(--serif);overflow-x:hidden;cursor:none}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+::selection{background:var(--gold-dk);color:#fff}
 
-            /* 阴影 & 动画时间 */
-            --shadow-soft: 0 10px 30px rgba(210, 105, 30, 0.1);
-            --shadow-card: 0 15px 45px rgba(210, 105, 30, 0.2);
-            --shadow-text: 3px 3px 0px rgba(255, 140, 0, 0.6);
-            --transition-main: all 0.5s cubic-bezier(0.645, 0.045, 0.355, 1); /* 经典的优雅缓动 */
-            --transition-fast: all 0.2s ease;
-        }
+/* ============================================================
+   NOISE OVERLAY
+============================================================ */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  background-size:300px;opacity:.55;
+}
 
-        /* 极简重置 */
-        *, *::before, *::after {
-            box-sizing: border-box;
-            outline: none;
-        }
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+#cur-dot{position:fixed;width:6px;height:6px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s,background .3s}
+#cur-ring{position:fixed;width:32px;height:32px;border:1px solid var(--gold-dk);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s var(--ease-out),height .35s var(--ease-out),border-color .35s,opacity .35s}
+body:has(.photo-item:hover) #cur-ring,body:has(a:hover) #cur-ring,body:has(button:hover) #cur-ring{width:54px;height:54px;border-color:var(--gold)}
+body:has(.photo-item:hover) #cur-dot{transform:translate(-50%,-50%) scale(0);opacity:0}
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden; /* 防止横向滚动 */
-            background-color: var(--color-soft-y);
-            font-family: var(--font-body);
-            color: var(--text-color);
-            -webkit-font-smoothing: antialiased;
-            cursor: none; /* 隐藏默认光标，使用自定义光标 */
-        }
+/* ============================================================
+   PROGRESS BAR
+============================================================ */
+#prog{position:fixed;top:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--gold-dk),var(--gold),var(--gold-lt));z-index:10000;transition:width .08s linear}
 
-        /* 美化滚动条 */
-        ::-webkit-scrollbar { width: 10px; background: var(--color-soft-y); }
-        ::-webkit-scrollbar-thumb { background: var(--color-main-y); border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--color-deep-o); }
+/* ============================================================
+   PRELOADER
+============================================================ */
+#preloader{
+  position:fixed;inset:0;background:var(--bg);z-index:99999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.5rem;
+  transition:opacity .9s var(--ease-out),visibility .9s
+}
+#preloader.out{opacity:0;visibility:hidden}
+.pl-logo{
+  font-family:var(--serif);font-size:1.6rem;font-weight:200;letter-spacing:.8em;text-indent:.8em;
+  color:var(--gold);opacity:0;animation:fadeUp .8s var(--ease-out) .3s forwards
+}
+.pl-en{
+  font-family:var(--latin);font-style:italic;font-size:.72rem;letter-spacing:.4em;
+  color:var(--gold-dk);opacity:0;animation:fadeUp .8s var(--ease-out) .6s forwards
+}
+.pl-track{width:180px;height:1px;background:rgba(201,170,114,.15);position:relative;overflow:hidden}
+.pl-fill{position:absolute;inset:0;background:var(--gold);width:0;animation:plFill 2.2s var(--ease-out) .8s forwards}
+.pl-pct{font-family:var(--latin);font-style:italic;font-size:.68rem;letter-spacing:.2em;color:var(--gold-dk)}
+@keyframes plFill{to{width:100%}}
 
-        /* 基础排版 */
-        h1, h2, h3 { font-family: var(--font-fancy); font-weight: bold; margin: 0; }
-        p { margin: 0; font-size: 1.1em; line-height: 1.8; }
-        img { max-width: 100%; height: auto; display: block; }
+/* ============================================================
+   NAV
+============================================================ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:2.2rem 5rem;
+  transition:padding .5s var(--ease-out),background .5s,border-color .5s;
+  border-bottom:1px solid transparent;
+}
+nav.stuck{
+  padding:1.1rem 5rem;
+  background:rgba(8,7,5,.88);
+  backdrop-filter:blur(16px);
+  border-bottom-color:rgba(201,170,114,.1);
+}
+.nav-logo{
+  font-family:var(--serif);font-weight:300;font-size:1rem;
+  letter-spacing:.3em;color:var(--gold)
+}
+.nav-menu{display:flex;gap:2.8rem;list-style:none}
+.nav-menu a{
+  font-family:var(--latin);font-style:italic;font-size:.78rem;letter-spacing:.2em;
+  color:var(--muted);transition:color .3s;position:relative
+}
+.nav-menu a::after{
+  content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;
+  background:var(--gold);transition:width .4s var(--ease-out)
+}
+.nav-menu a:hover{color:var(--gold)}
+.nav-menu a:hover::after{width:100%}
 
-        /* -----------------------------------------------------------
-           2. 核心动态元件 - 粒子背景、自定义光标
-           ----------------------------------------------------------- */
-        /* Canvas 粒子背景 */
-        #particle-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1; /* 在所有内容下方 */
-            opacity: 0.6;
-        }
+/* ============================================================
+   HERO
+============================================================ */
+#hero{
+  position:relative;min-height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;
+  overflow:hidden;
+}
+.hero-left{
+  position:relative;z-index:2;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:9rem 4rem 6rem 5.5rem;
+}
+.hero-right{
+  position:relative;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  padding:7rem 5rem 6rem 2rem;
+}
+/* radial bg */
+#hero::before{
+  content:'';position:absolute;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 65% 90% at 15% 50%,#211608 0%,transparent 70%),
+    radial-gradient(ellipse 80% 60% at 80% 30%,#16100600 0%,#080705 80%),
+    #080705;
+}
+/* subtle grid lines */
+#hero .grid-lines{
+  position:absolute;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(201,170,114,.03) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(201,170,114,.03) 1px,transparent 1px);
+  background-size:72px 72px;
+}
+/* vertical separator */
+#hero .v-sep{
+  position:absolute;top:12%;bottom:12%;left:50%;width:1px;z-index:1;
+  background:linear-gradient(to bottom,transparent,rgba(201,170,114,.18) 30%,rgba(201,170,114,.18) 70%,transparent);
+}
 
-        /* 自定义光标 */
-        #custom-cursor {
-            position: fixed;
-            width: 30px;
-            height: 30px;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🐾</text></svg>'); /* 龙爪 SVG */
-            background-size: cover;
-            pointer-events: none; /* 不妨碍点击 */
-            z-index: 10000; /* 最高层 */
-            transform: translate(-50%, -50%);
-            transition: transform 0.05s linear; /* 极快的跟手速度 */
-        }
+/* hero text */
+.h-eyebrow{
+  display:flex;align-items:center;gap:.9rem;
+  font-family:var(--latin);font-style:italic;font-size:.72rem;letter-spacing:.4em;
+  color:var(--gold-dk);margin-bottom:2.8rem;
+  opacity:0;animation:fadeUp .9s var(--ease-out) 2.9s forwards;
+}
+.h-eyebrow::before{content:'';width:32px;height:1px;background:var(--gold-dk);flex-shrink:0}
+.h-title{
+  font-family:var(--serif);font-weight:200;
+  font-size:clamp(3.2rem,5.5vw,6.2rem);
+  line-height:1.08;letter-spacing:.12em;color:#fff;
+  margin-bottom:2.2rem;
+  opacity:0;animation:fadeUp 1.1s var(--ease-out) 3.1s forwards;
+}
+.h-title em{
+  font-style:normal;color:var(--gold);position:relative;display:inline-block;
+}
+.h-title em::after{
+  content:'';position:absolute;bottom:.04em;left:0;right:0;height:1px;
+  background:var(--gold-dk);transform:scaleX(0);transform-origin:left;
+  animation:scaleX 1.1s var(--ease-out) 4.3s forwards;
+}
+.h-motto{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(.82rem,1.1vw,.98rem);
+  letter-spacing:.35em;color:var(--gold);line-height:2.2;
+  opacity:0;animation:fadeUp .9s var(--ease-out) 3.4s forwards;
+}
+.h-rule{width:52px;height:1px;background:var(--gold-dk);margin:2rem 0;opacity:0;animation:fadeUp .8s var(--ease-out) 3.6s forwards}
+.h-sub{
+  font-family:var(--latin);font-style:italic;font-size:.78rem;letter-spacing:.15em;
+  color:var(--muted);opacity:0;animation:fadeUp .8s var(--ease-out) 3.8s forwards;
+}
+.h-scroll{
+  position:absolute;bottom:2.8rem;left:5.5rem;z-index:3;
+  display:flex;flex-direction:column;align-items:flex-start;gap:.5rem;
+  opacity:0;animation:fadeUp .8s var(--ease-out) 4.6s forwards;
+}
+.h-scroll span{font-family:var(--latin);font-style:italic;font-size:.65rem;letter-spacing:.3em;color:var(--gold-dk)}
+.h-scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,var(--gold-dk),transparent);animation:pulse 2.2s ease-in-out infinite}
 
-        .cursor-trail {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: var(--color-main-y);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.8;
-            transform: translate(-50%, -50%);
-        }
+/* ── Photo collage ── */
+.collage{position:relative;width:100%;max-width:480px;height:560px}
 
-        /* -----------------------------------------------------------
-           3. 3D 视角欢迎页 (入口互动)
-           ----------------------------------------------------------- */
-        #welcome-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--color-main-y);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 9999;
-            perspective: 1000px; /* 开启 3D 空间 */
-            transition: opacity 1s ease, visibility 1s;
-        }
+/* photo slots — absolute positioned */
+.cp{position:absolute;overflow:hidden;cursor:pointer}
+/* main: centre-left, tall */
+.cp-main{top:4%;left:18%;width:46%;z-index:3;opacity:0;animation:colIn 1s var(--ease-out) 3.2s forwards}
+/* top-right */
+.cp-tr  {top:0;right:0;width:36%;z-index:2;opacity:0;animation:colIn 1s var(--ease-out) 3.5s forwards}
+/* bottom-left */
+.cp-bl  {bottom:0;left:0;width:35%;z-index:2;opacity:0;animation:colIn 1s var(--ease-out) 3.8s forwards}
+/* bottom-right small */
+.cp-br  {bottom:6%;right:4%;width:26%;z-index:4;opacity:0;animation:colIn 1s var(--ease-out) 4.1s forwards}
 
-        #welcome-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
+.cp img{
+  width:100%;aspect-ratio:3/4;object-fit:cover;
+  filter:brightness(.88) sepia(12%);
+  transition:filter .6s,transform .7s var(--ease-out);
+}
+.cp:hover img{filter:brightness(1.05) sepia(0%);transform:scale(1.04)}
 
-        .welcome-egg {
-            width: 200px; height: 260px;
-            background: var(--color-white);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; /* 蛋形 */
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer;
-            position: relative;
-            transform-style: preserve-3d; /* 内部元素支持 3D */
-            animation: eggFloat 4s infinite ease-in-out;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+/* gold frame */
+.cp::before{
+  content:'';position:absolute;inset:0;z-index:5;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(201,170,114,.35);
+}
+.cp:hover::before{box-shadow:inset 0 0 0 1px rgba(201,170,114,.7)}
 
-        @keyframes eggFloat {
-            0%, 100% { transform: translateY(0) rotateX(0deg); }
-            50% { transform: translateY(-30px) rotateX(10deg); }
-        }
+/* overlay label */
+.cp-tag{
+  position:absolute;bottom:0;left:0;right:0;z-index:6;
+  padding:.5rem .7rem;
+  background:linear-gradient(to top,rgba(8,7,5,.75),transparent);
+  font-family:var(--latin);font-style:italic;font-size:.6rem;letter-spacing:.2em;color:var(--gold);
+  opacity:0;transition:opacity .4s;
+}
+.cp:hover .cp-tag{opacity:1}
 
-        .welcome-egg:hover {
-            transform: scale(1.1) rotateY(20deg);
-        }
+/* gold badge on main */
+.cp-badge{
+  position:absolute;top:-1px;left:-1px;z-index:7;
+  background:var(--gold-dk);padding:.32rem .75rem;
+  font-family:var(--latin);font-style:italic;font-size:.58rem;letter-spacing:.2em;color:var(--bg);
+}
+/* corner brackets */
+.cp-corner{position:absolute;width:14px;height:14px;z-index:7}
+.cp-corner.tl{top:-4px;left:-4px;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
+.cp-corner.br{bottom:-4px;right:-4px;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
 
-        .welcome-egg::after {
-            content: "?点击解封?";
-            position: absolute;
-            bottom: -50px; left: 50%;
-            transform: translateX(-50%);
-            font-family: var(--font-fancy);
-            color: var(--color-white);
-            font-size: 1.5em;
-            text-shadow: var(--shadow-text);
-            white-space: nowrap;
-        }
+/* float animation per card */
+.cp-main img{animation:float1 8s ease-in-out infinite}
+.cp-tr  img{animation:float2 10s ease-in-out 1s infinite}
+.cp-bl  img{animation:float1 9s ease-in-out 2s infinite reverse}
+.cp-br  img{animation:float2 7s ease-in-out .5s infinite}
 
-        .welcome-dragon-icon {
-            font-size: 100px;
-            transform: translateZ(50px); /* 悬浮在蛋表面之上 */
-        }
+@keyframes float1{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes float2{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+@keyframes colIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
 
-        /* 欢迎页标题 */
-        .welcome-title {
-            position: absolute;
-            top: 10vh;
-            font-size: 3em;
-            color: white;
-            font-family: var(--font-fancy);
-            text-shadow: var(--shadow-text);
-            animation: textPulse 2s infinite;
-        }
+/* ── random indicator dots ── */
+.collage-meta{
+  position:absolute;bottom:-2rem;right:0;
+  font-family:var(--latin);font-style:italic;font-size:.62rem;letter-spacing:.2em;color:var(--gold-dk);
+}
 
-        @keyframes textPulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-        }
+/* ============================================================
+   KEYFRAMES
+============================================================ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes scaleX{to{transform:scaleX(1)}}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
 
-        /* -----------------------------------------------------------
-           4. 页面头部 (Hero Section) - 动态文字路径 & 视差
-           ----------------------------------------------------------- */
-        .hero {
-            position: relative;
-            width: 100%;
-            height: 110vh; /* 稍微高一点，用于视差效果 */
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 100px;
-            z-index: 10;
-        }
+/* ============================================================
+   SECTION COMMONS
+============================================================ */
+.wrap{max-width:1380px;margin:0 auto;padding:0 4.5rem}
 
-        /* 视差背景块 */
-        .hero-bg-shapes {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-        }
-        .shape { position: absolute; border-radius: 50%; opacity: 0.5; }
-        .shape-1 { width: 400px; height: 400px; background: var(--color-soft-o); top: -100px; left: -100px; }
-        .shape-2 { width: 300px; height: 300px; background: var(--color-pink-a); bottom: 100px; right: -50px; }
-        .shape-3 { width: 200px; height: 200px; background: var(--color-blue-a); top: 200px; right: 20%; }
+/* scroll-reveal */
+.sr{opacity:0;transform:translateY(36px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out)}
+.sr.in{opacity:1;transform:none}
+.sr-l{opacity:0;transform:translateX(-36px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out)}
+.sr-l.in{opacity:1;transform:none}
+.sr-r{opacity:0;transform:translateX(36px);transition:opacity .9s var(--ease-out),transform .9s var(--ease-out)}
+.sr-r.in{opacity:1;transform:none}
+.delay-1{transition-delay:.1s}.delay-2{transition-delay:.2s}.delay-3{transition-delay:.3s}
+.delay-4{transition-delay:.4s}.delay-5{transition-delay:.5s}.delay-6{transition-delay:.6s}
 
-        /* SVG 动态文字路径 */
-        .hero-svg-title {
-            width: 80%;
-            max-width: 800px;
-            height: 150px;
-            margin-bottom: 30px;
-        }
+.gold-line{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-dk) 20%,var(--gold-dk) 80%,transparent)
+}
 
-        .hero-svg-title text {
-            font-family: var(--font-fancy);
-            font-size: 60px;
-            font-weight: bold;
-            fill: none;
-            stroke: var(--color-deep-o);
-            stroke-width: 2px;
-            stroke-dasharray: 10, 10; /* 虚线效果 */
-            animation: pathAnimate 10s infinite linear; /* 文字沿路径流动 */
-        }
+/* ============================================================
+   SECTION LABELS & HEADINGS
+============================================================ */
+.sec-label{
+  display:inline-flex;align-items:center;gap:.8rem;
+  font-family:var(--latin);font-style:italic;font-size:.72rem;letter-spacing:.38em;color:var(--gold-dk);
+  margin-bottom:1.8rem;
+}
+.sec-label::before{content:'';width:28px;height:1px;background:var(--gold-dk);flex-shrink:0}
+.sec-heading{
+  font-family:var(--serif);font-weight:200;
+  font-size:clamp(2rem,3.2vw,3.4rem);
+  letter-spacing:.1em;line-height:1.55;color:#fff;
+  margin-bottom:1.6rem;
+}
+.sec-heading em{font-style:normal;color:var(--gold)}
 
-        @keyframes pathAnimate {
-            to { stroke-dashoffset: 200; fill: var(--color-deep-o); }
-        }
+/* ============================================================
+   INTRO
+============================================================ */
+#intro{padding:10rem 0 8rem}
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:center}
+.intro-body{font-size:.95rem;font-weight:300;line-height:2.2;color:var(--muted);letter-spacing:.04em}
+.intro-body p+p{margin-top:1.3rem}
+.intro-frame{position:relative;padding:1.4rem;border:1px solid rgba(201,170,114,.25)}
+.intro-frame::before{
+  content:'';position:absolute;top:-7px;left:-7px;right:7px;bottom:7px;
+  border:1px solid rgba(201,170,114,.1);pointer-events:none;
+}
+.intro-frame img{width:100%;aspect-ratio:4/5;object-fit:cover;filter:sepia(15%) brightness(.9);transition:filter .6s}
+.intro-frame:hover img{filter:sepia(0%) brightness(1)}
+.intro-cap{
+  font-family:var(--latin);font-style:italic;font-size:.65rem;
+  letter-spacing:.22em;color:var(--gold-dk);text-align:right;margin-top:.8rem;
+}
 
-        .hero p {
-            font-family: var(--font-fancy);
-            font-size: 1.6em;
-            color: var(--color-text);
-            background: rgba(255, 255, 255, 0.7);
-            padding: 10px 30px;
-            border-radius: 50px;
-            box-shadow: var(--shadow-soft);
-            margin-bottom: 50px;
-        }
+/* ============================================================
+   DETAILS STRIP
+============================================================ */
+#details{padding:7rem 0}
+#details .wrap{
+  display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;gap:0 3.5rem;
+}
+.det-vr{background:linear-gradient(to bottom,transparent,var(--gold-dk) 20%,var(--gold-dk) 80%,transparent)}
+.det-item{}
+.det-num{
+  font-family:var(--latin);font-size:2.8rem;font-weight:300;line-height:1;
+  color:var(--gold-dk);opacity:.28;margin-bottom:1.2rem;
+}
+.det-title{
+  font-family:var(--serif);font-size:1.05rem;font-weight:400;
+  letter-spacing:.1em;color:var(--gold);margin-bottom:.9rem;
+}
+.det-body{font-size:.88rem;font-weight:300;line-height:2.1;color:var(--muted)}
 
-        /* 主视觉图容器 - 用于高精度的视差和悬停动画 */
-        .hero-img-parallax-container {
-            position: relative;
-            width: 550px;
-            perspective: 2000px; /* 3D 视角 */
-            z-index: 5;
-        }
+/* ============================================================
+   CHAPTER BREAK
+============================================================ */
+.ch-break{
+  padding:7rem 0;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:1rem;
+}
+.ch-break::before,.ch-break::after{
+  content:'';width:1px;height:70px;
+  background:linear-gradient(to bottom,transparent,var(--gold-dk));
+  display:block;
+}
+.ch-break::after{background:linear-gradient(to top,transparent,var(--gold-dk))}
+.ch-num{font-family:var(--latin);font-style:italic;font-size:.72rem;letter-spacing:.45em;color:var(--gold-dk)}
+.ch-title{font-family:var(--serif);font-weight:200;font-size:clamp(2rem,4vw,3.8rem);letter-spacing:.22em;color:var(--gold);text-indent:.22em}
+.ch-desc{font-family:var(--serif);font-size:.88rem;font-weight:300;letter-spacing:.08em;color:var(--muted);max-width:460px}
 
-        .hero-img-parallax-container img {
-            width: 100%;
-            border-radius: 50%; /* 圆滚滚 */
-            border: 15px solid var(--color-white);
-            box-shadow: var(--shadow-card);
-            transition: transform 0.1s linear; /* 极其跟手的悬停 */
-        }
+/* ============================================================
+   GALLERY COMMONS
+============================================================ */
+.gal-header{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:0 4.5rem;margin-bottom:2.5rem;
+}
+.gal-label{font-family:var(--latin);font-style:italic;font-size:.76rem;letter-spacing:.32em;color:var(--gold-dk)}
+.gal-range{font-family:var(--latin);font-size:.68rem;letter-spacing:.18em;color:var(--gold-dk);opacity:.5}
 
-        /* 装饰元素：围绕主图漂浮的小图标 */
-        .deco-icon { position: absolute; font-size: 3em; z-index: 10; animation: iconFloat 3s infinite ease-in-out; }
-        .icon-burger { top: 10%; left: -50px; animation-delay: 0s; }
-        .icon-chicken { bottom: 20%; right: -60px; animation-delay: 0.5s; }
-        .icon-star { top: 50%; left: -80px; font-size: 2em; color: var(--color-main-y); animation-delay: 1s; }
+/* photo item */
+.pi{position:relative;overflow:hidden;cursor:pointer}
+.pi img{
+  width:100%;display:block;object-fit:cover;
+  filter:brightness(.88) sepia(10%);
+  transition:filter .55s,transform .65s var(--ease-out);
+}
+.pi:hover img{filter:brightness(1.06) sepia(0%);transform:scale(1.04)}
+.pi::after{
+  content:'';position:absolute;inset:0;
+  box-shadow:inset 0 0 0 1px transparent;
+  transition:box-shadow .4s;pointer-events:none;z-index:2;
+}
+.pi:hover::after{box-shadow:inset 0 0 0 1px rgba(201,170,114,.5)}
+.pi-ov{
+  position:absolute;inset:0;z-index:3;
+  background:linear-gradient(to top,rgba(8,7,5,.72) 0%,transparent 55%);
+  opacity:0;transition:opacity .4s;
+  display:flex;align-items:flex-end;padding:1rem 1.1rem;
+}
+.pi:hover .pi-ov{opacity:1}
+.pi-ov span{font-family:var(--latin);font-style:italic;font-size:.65rem;letter-spacing:.2em;color:var(--gold)}
 
-        @keyframes iconFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(15deg); }
-        }
+/* stagger grid children */
+.sg .pi{opacity:0;transform:translateY(28px);transition:opacity .65s var(--ease-out),transform .65s var(--ease-out)}
+.sg.in .pi:nth-child(1) {opacity:1;transform:none;transition-delay:.04s}
+.sg.in .pi:nth-child(2) {opacity:1;transform:none;transition-delay:.10s}
+.sg.in .pi:nth-child(3) {opacity:1;transform:none;transition-delay:.16s}
+.sg.in .pi:nth-child(4) {opacity:1;transform:none;transition-delay:.22s}
+.sg.in .pi:nth-child(5) {opacity:1;transform:none;transition-delay:.28s}
+.sg.in .pi:nth-child(6) {opacity:1;transform:none;transition-delay:.34s}
+.sg.in .pi:nth-child(7) {opacity:1;transform:none;transition-delay:.40s}
+.sg.in .pi:nth-child(8) {opacity:1;transform:none;transition-delay:.46s}
+.sg.in .pi:nth-child(9) {opacity:1;transform:none;transition-delay:.52s}
+.sg.in .pi:nth-child(10){opacity:1;transform:none;transition-delay:.58s}
+.sg.in .pi:nth-child(11){opacity:1;transform:none;transition-delay:.62s}
+.sg.in .pi:nth-child(12){opacity:1;transform:none;transition-delay:.66s}
 
-        /* -----------------------------------------------------------
-           5. 经典故事卡片部分 (1.jpg - 8.jpg) - 3D Tilt & Scroll Animate
-           ----------------------------------------------------------- */
-        .story-section {
-            padding: 100px 0;
-            position: relative;
-            z-index: 10;
-        }
+/* ── grid layouts ── */
+.g-mason{padding:0 3.5rem;columns:3;column-gap:1.3rem}
+.g-mason .pi{break-inside:avoid;margin-bottom:1.3rem}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+.g-strip{
+  display:flex;gap:1.3rem;padding:0 4.5rem 1rem;
+  overflow-x:auto;scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.g-strip::-webkit-scrollbar{display:none}
+.g-strip .pi{flex:0 0 300px;scroll-snap-align:start}
 
-        .story-timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 100px; /* 大间距 */
-        }
+.g-quad{padding:0 3.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1.3rem}
+.g-five{padding:0 3.5rem;display:grid;grid-template-columns:repeat(5,1fr);gap:1.1rem}
+.g-trio{padding:0 3.5rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:1.3rem}
+.g-duo {padding:0 3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:2rem}
+.g-feat{padding:0 3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.3rem}
+.g-feat .pi.tall{grid-row:span 2}
 
-        /* JS 滚动动画基类 */
-        .scroll-animate {
-            opacity: 0;
-            transform: translateY(50px) scale(0.9);
-            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+.gal-sec{padding:0 0 5rem}
+.gal-sec+.gal-sec{padding-top:0}
 
-        .scroll-animate.animated {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+/* ============================================================
+   QUOTE BLOCK
+============================================================ */
+.quote-wrap{padding:9rem 0;display:flex;justify-content:center}
+.quote-box{max-width:760px;text-align:center;padding:0 2rem}
+.q-mark{
+  font-family:var(--latin);font-size:5rem;line-height:.4;
+  color:var(--gold-dk);opacity:.5;display:block;margin-bottom:2rem;
+}
+.q-text{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(1.2rem,2vw,1.85rem);
+  line-height:2.1;letter-spacing:.16em;color:var(--cream);
+}
+.q-rule{width:50px;height:1px;background:var(--gold-dk);margin:2.2rem auto}
+.q-attr{font-family:var(--latin);font-style:italic;font-size:.72rem;letter-spacing:.28em;color:var(--gold-dk)}
 
-        /* 卡片主体 */
-        .story-card {
-            display: flex;
-            align-items: center;
-            background: var(--color-white);
-            border-radius: 50px; /* 夸张的圆角 */
-            padding: 40px;
-            gap: 50px;
-            box-shadow: var(--shadow-card);
-            border: 8px solid var(--color-main-y);
-            position: relative;
-            overflow: hidden; /* 裁剪内部动态高光 */
-            transform-style: preserve-3d; /* 内部支持 3D Tilt */
-            transition: box-shadow 0.3s ease;
-        }
+/* ============================================================
+   BANNER (full-bleed)
+============================================================ */
+.banner{
+  position:relative;height:52vh;min-height:320px;
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+.banner-bg{position:absolute;inset:0}
+.banner-bg img{width:100%;height:120%;object-fit:cover;filter:brightness(.35) sepia(35%)}
+.banner-ov{
+  position:absolute;inset:0;
+  background:linear-gradient(to right,rgba(8,7,5,.8),rgba(8,7,5,.25) 50%,rgba(8,7,5,.8))
+}
+.banner-txt{position:relative;z-index:2;text-align:center}
+.banner-title{
+  font-family:var(--serif);font-weight:200;
+  font-size:clamp(1.8rem,4.5vw,4rem);
+  letter-spacing:.28em;color:var(--gold);text-indent:.28em;line-height:1.5;
+}
+.banner-sub{
+  font-family:var(--latin);font-style:italic;font-size:.78rem;
+  letter-spacing:.3em;color:var(--muted);margin-top:.9rem;
+}
 
-        .story-card:hover {
-            box-shadow: 0 30px 60px rgba(255, 140, 0, 0.3);
-        }
+/* ============================================================
+   STATEMENT
+============================================================ */
+#statement{
+  padding:10rem 0;
+  background:linear-gradient(180deg,var(--bg) 0%,var(--surface) 50%,var(--bg) 100%);
+  position:relative;overflow:hidden;
+}
+#statement::before{
+  content:'龍';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:var(--serif);font-size:32vw;font-weight:700;
+  color:rgba(201,170,114,.025);pointer-events:none;letter-spacing:.1em;white-space:nowrap;
+}
+.stmt-inner{max-width:860px;margin:0 auto;padding:0 4.5rem;position:relative;z-index:1}
+.stmt-heading{
+  font-family:var(--serif);font-weight:200;
+  font-size:clamp(1.8rem,3vw,2.8rem);
+  line-height:1.85;letter-spacing:.1em;color:#fff;margin-bottom:3rem;
+}
+.stmt-heading strong{color:var(--gold);font-weight:300}
+.stmt-body{
+  font-size:.95rem;font-weight:300;line-height:2.3;letter-spacing:.05em;color:var(--muted);
+  border-left:1px solid var(--gold-dk);padding-left:2rem;
+}
 
-        /* JS 3D Tilt 会动态修改此元素的 transform */
-        .story-card-inner {
-            display: flex;
-            align-items: center;
-            gap: 50px;
-            width: 100%;
-        }
+/* ============================================================
+   CREDITS
+============================================================ */
+#credits{padding:10rem 0 7rem;text-align:center}
+.cr-glyph{font-family:var(--serif);font-size:4.5rem;color:var(--gold);line-height:1;margin-bottom:2rem}
+.cr-title{font-family:var(--serif);font-weight:200;font-size:clamp(1.4rem,2.5vw,2.2rem);letter-spacing:.32em;color:#fff;text-indent:.32em}
+.cr-sub{font-family:var(--latin);font-style:italic;font-size:.78rem;letter-spacing:.25em;color:var(--gold-dk);margin-top:.6rem}
+.cr-rule{width:1px;height:56px;background:linear-gradient(to bottom,var(--gold-dk),transparent);margin:3rem auto}
+.cr-motto{font-family:var(--serif);font-weight:300;font-size:1.05rem;letter-spacing:.2em;line-height:2.4;color:var(--muted)}
+.cr-motto strong{color:var(--gold);font-weight:400}
+.cr-note{font-family:var(--serif);font-size:.78rem;font-weight:300;letter-spacing:.15em;color:var(--gold-dk);opacity:.55;margin-top:3rem}
 
-        .story-card.reverse .story-card-inner {
-            flex-direction: row-reverse;
-        }
+/* ============================================================
+   FOOTER
+============================================================ */
+footer{
+  border-top:1px solid rgba(201,170,114,.1);
+  padding:2.8rem 5rem;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.ft-l{font-family:var(--serif);font-size:.78rem;letter-spacing:.18em;color:var(--gold-dk)}
+.ft-c{font-family:var(--latin);font-style:italic;font-size:.72rem;letter-spacing:.2em;color:var(--gold-dk);opacity:.55}
+.ft-r{font-family:var(--serif);font-size:.72rem;letter-spacing:.1em;color:var(--gold-dk);opacity:.45}
 
-        /* 卡片内的高光闪烁效果 (纯 CSS) */
-        .story-card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(
-                45deg,
-                rgba(255,255,255,0) 0%,
-                rgba(255,255,255,0) 40%,
-                rgba(255,255,255,0.6) 50%,
-                rgba(255,255,255,0) 60%,
-                rgba(255,255,255,0) 100%
-            );
-            transform: rotate(-45deg);
-            transition: none;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 5;
-        }
-        .story-card:hover::before {
-            animation: shimmer 1.5s infinite;
-            opacity: 1;
-        }
-        @keyframes shimmer {
-            0% { transform: translate(-30%, -30%) rotate(-45deg); }
-            100% { transform: translate(30%, 30%) rotate(-45deg); }
-        }
+/* ============================================================
+   LIGHTBOX
+============================================================ */
+#lb{
+  position:fixed;inset:0;z-index:8000;
+  background:rgba(4,3,2,.97);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .4s,visibility .4s;
+}
+#lb.on{opacity:1;visibility:visible}
+.lb-wrap{position:relative;max-width:82vw;max-height:88vh}
+.lb-wrap img{max-width:82vw;max-height:88vh;object-fit:contain;display:block;transition:opacity .22s}
+.lb-cap{
+  position:absolute;bottom:-2.2rem;left:0;right:0;text-align:center;
+  font-family:var(--latin);font-style:italic;font-size:.7rem;letter-spacing:.22em;color:var(--gold-dk);
+}
+.lb-close{
+  position:absolute;top:2rem;right:3rem;
+  font-family:var(--latin);font-size:.7rem;letter-spacing:.3em;color:var(--gold-dk);
+  background:none;border:none;cursor:pointer;transition:color .3s;
+}
+.lb-close:hover{color:var(--gold)}
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:42px;height:42px;background:none;
+  border:1px solid var(--gold-dk);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;transition:background .3s,border-color .3s;
+}
+.lb-nav:hover{background:rgba(201,170,114,.12);border-color:var(--gold)}
+.lb-prev{right:calc(100% + 1.4rem)}
+.lb-next{left:calc(100% + 1.4rem)}
 
-        .story-img-wrapper {
-            flex: 0 0 50%;
-            position: relative;
-            transform-style: preserve-3d;
-        }
-
-        .story-img-wrapper img {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 40px;
-            border: 5px dashed var(--color-soft-o);
-            transform: translateZ(30px); /* 悬浮效果 */
-        }
-
-        .story-text {
-            flex: 1;
-            text-align: center;
-            transform-style: preserve-3d;
-        }
-
-        .story-text h3 {
-            color: var(--color-deep-o);
-            font-size: 3.5em;
-            margin: 0;
-            display: inline-block;
-            background: var(--color-main-y);
-            color: white;
-            padding: 10px 40px;
-            border-radius: 50px;
-            text-shadow: var(--shadow-text);
-            transform: translateZ(50px) rotate(-3deg); /* 悬浮 & 倾斜 */
-            box-shadow: var(--shadow-soft);
-        }
-
-        .story-card.reverse .story-text h3 {
-            transform: translateZ(50px) rotate(3deg);
-        }
-
-        /* 装饰用 SVG 波浪线条 */
-        .card-deco-wave {
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            height: 40px;
-            fill: var(--color-soft-o);
-            opacity: 0.7;
-            z-index: -1;
-        }
-
-        /* 响应式调整 */
-        @media (max-width: 992px) {
-            .story-card-inner, .story-card.reverse .story-card-inner { flex-direction: column; text-align: center; }
-            .story-img-wrapper { width: 100%; }
-            .story-img-wrapper img { height: auto; }
-            .story-text h3 { font-size: 2.8em; margin-top: 20px; }
-            .hero-svg-title text { font-size: 45px; }
-            .hero-img-parallax-container { width: 90%; max-width: 400px; }
-        }
-
-        /* -----------------------------------------------------------
-           6. 梦幻漂浮画廊部分 (A1.jpg - A19.jpg) - 核心酷炫点
-           ----------------------------------------------------------- */
-        .bubble-gallery-section {
-            width: 100%;
-            height: 150vh; /* 巨大的画布空间 */
-            position: relative;
-            overflow: hidden;
-            background-color: #FFFDF0;
-            border-top: 15px dashed var(--color-blue-a);
-            border-bottom: 15px dashed var(--color-pink-a);
-            z-index: 5;
-        }
-
-        .gallery-title-area {
-            position: sticky; /* 粘性标题，随着滚动停留在视口 */
-            top: 10vh;
-            width: 100%;
-            text-align: center;
-            z-index: 20;
-            pointer-events: none; /* 不妨碍点击后面的气泡 */
-        }
-
-        .gallery-title-area h2 {
-            font-size: 4em;
-            color: white;
-            background: var(--color-blue-a);
-            display: inline-block;
-            padding: 15px 50px;
-            border-radius: 100px;
-            text-shadow: 4px 4px 0px rgba(70, 130, 180, 0.6);
-            box-shadow: var(--shadow-card);
-        }
-
-        /* 这里的容器将由 JS 动态填充 A(1)-A(19) 的图片气泡 */
-        #bubble-container {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-        }
-
-        /* 动态生成的气泡的基础样式 */
-        .nailong-bubble {
-            position: absolute;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 10px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 10px 30px rgba(135, 206, 235, 0.3);
-            cursor: pointer;
-            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                        box-shadow 0.3s ease,
-                        width 0.3s ease, height 0.3s ease;
-            z-index: 10;
-            /* 基础漂浮动画 - 将在 JS 中被个性化修改 */
-            animation: bubbleFloatBase infinite ease-in-out;
-        }
-
-        @keyframes bubbleFloatBase {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(10px, -15px) rotate(5deg); }
-            50% { transform: translate(-10px, -20px) rotate(-5deg); }
-            75% { transform: translate(-15px, -10px) rotate(3deg); }
-        }
-
-        /* 悬停时的“爆裂预警”效果：变大、停止漂浮、增加光晕 */
-        .nailong-bubble:hover {
-            z-index: 100; /* 升至最前 */
-            box-shadow: 0 20px 60px rgba(135, 206, 235, 0.8);
-            border-color: var(--color-white);
-            animation-play-state: paused !important; /* 核心：鼠标悬停停止漂浮 */
-            /* JS 将在悬停时动态修改 scale */
-        }
-
-        .nailong-bubble img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* 裁剪填充圆圈 */
-            transition: transform 0.6s ease;
-        }
-        
-        .nailong-bubble:hover img {
-            transform: scale(1.1); /* 图片内部轻微放大 */
-        }
-
-        /* -----------------------------------------------------------
-           7. 页脚区域 (Footer)
-           ----------------------------------------------------------- */
-        footer {
-            text-align: center;
-            padding: 80px 20px;
-            background-color: var(--color-deep-o);
-            color: white;
-            font-size: 1.4em;
-            font-weight: bold;
-            font-family: var(--font-fancy);
-            border-top: 10px wavy var(--color-main-y);
-            position: relative;
-            z-index: 10;
-        }
-
-        .footer-deco {
-            position: absolute;
-            top: -30px; left: 50%; transform: translateX(-50%);
-            font-size: 3em;
-        }
-
-    </style>
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+@media(max-width:1100px){
+  #hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  #hero::after,.v-sep{display:none}
+  .hero-left{padding:10rem 3rem 7rem}
+  .h-scroll{left:3rem}
+  nav{padding:1.8rem 3rem}
+  nav.stuck{padding:1rem 3rem}
+  .intro-grid{grid-template-columns:1fr;gap:3rem}
+  #details .wrap{grid-template-columns:1fr;gap:2.5rem}
+  .det-vr{display:none}
+  .g-mason{columns:2;padding:0 2rem}
+  .g-quad{grid-template-columns:repeat(2,1fr);padding:0 2rem}
+  .g-five{grid-template-columns:repeat(3,1fr);padding:0 2rem}
+  .g-trio{grid-template-columns:1fr 1fr;padding:0 2rem}
+  .g-duo,.g-feat{padding:0 2rem}
+  .gal-header,.wrap{padding-left:2rem;padding-right:2rem}
+  footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem}
+}
+@media(max-width:680px){
+  .g-mason{columns:1}
+  .g-quad,.g-five,.g-trio{grid-template-columns:repeat(2,1fr)}
+  .g-duo,.g-feat{grid-template-columns:1fr}
+  .g-feat .pi.tall{grid-row:span 1}
+  .g-strip .pi{flex:0 0 72vw}
+  .ch-title{letter-spacing:.12em}
+  .banner-title{letter-spacing:.12em}
+}
+</style>
 </head>
 <body>
 
-    <div id="custom-cursor"></div>
-    
-    <canvas id="particle-canvas"></canvas>
+<!-- progress -->
+<div id="prog"></div>
+<!-- cursor -->
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
 
-    <audio id="bg-music" src="1.mp3" loop></audio>
+<!-- PRELOADER -->
+<div id="preloader">
+  <p class="pl-logo">奶龙博物馆</p>
+  <p class="pl-en">Nailong Museum · Est. MMXXV</p>
+  <div class="pl-track"><div class="pl-fill"></div></div>
+  <p class="pl-pct" id="plNum">0%</p>
+</div>
 
-    <div id="welcome-screen">
-        <h1 class="welcome-title">解封梦幻奶龙...</h1>
-        <div class="welcome-egg" id="start-btn">
-            <span class="welcome-dragon-icon">🐉</span>
-        </div>
+<!-- LIGHTBOX -->
+<div id="lb">
+  <button class="lb-close" id="lbClose">✕ &nbsp;CLOSE</button>
+  <div class="lb-wrap">
+    <img id="lbImg" src="" alt=""/>
+    <button class="lb-nav lb-prev" id="lbPrev">&#8592;</button>
+    <button class="lb-nav lb-next" id="lbNext">&#8594;</button>
+    <p class="lb-cap" id="lbCap"></p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">奶龙博物馆</a>
+  <ul class="nav-menu">
+    <li><a href="#intro">序言</a></li>
+    <li><a href="#g1">初见</a></li>
+    <li><a href="#g2">生动</a></li>
+    <li><a href="#g3">灵魂</a></li>
+    <li><a href="#g4">永恒</a></li>
+    <li><a href="#credits">尾声</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section id="hero">
+  <div class="grid-lines"></div>
+  <div class="v-sep"></div>
+
+  <!-- Left: Text -->
+  <div class="hero-left">
+    <p class="h-eyebrow">Nailong Museum &nbsp;·&nbsp; MMXXV</p>
+    <h1 class="h-title"><em>奶龙</em><br/>博物馆</h1>
+    <p class="h-motto">美在生活中消亡<br/>在艺术中不朽</p>
+    <div class="h-rule"></div>
+    <p class="h-sub">Beauty perishes in life &nbsp;·&nbsp; Immortal in art</p>
+  </div>
+
+  <!-- Right: Photo collage (randomised by JS) -->
+  <div class="hero-right">
+    <div class="collage" id="collage">
+      <!-- main -->
+      <div class="cp cp-main" id="cp-main">
+        <div class="cp-corner tl"></div>
+        <div class="cp-corner br"></div>
+        <span class="cp-badge" id="cp-main-badge"></span>
+        <img id="cp-main-img" src="" alt="奶龙"/>
+        <div class="cp-tag" id="cp-main-tag"></div>
+      </div>
+      <!-- top-right -->
+      <div class="cp cp-tr" id="cp-tr">
+        <img id="cp-tr-img" src="" alt="奶龙"/>
+        <div class="cp-tag" id="cp-tr-tag"></div>
+      </div>
+      <!-- bottom-left -->
+      <div class="cp cp-bl" id="cp-bl">
+        <img id="cp-bl-img" src="" alt="奶龙"/>
+        <div class="cp-tag" id="cp-bl-tag"></div>
+      </div>
+      <!-- bottom-right -->
+      <div class="cp cp-br" id="cp-br">
+        <img id="cp-br-img" src="" alt="奶龙"/>
+        <div class="cp-tag" id="cp-br-tag"></div>
+      </div>
+      <span class="collage-meta" id="collage-meta"></span>
     </div>
-
-    <main id="main-content">
-
-        <header class="hero">
-            <div class="hero-bg-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
-            </div>
-
-            <svg class="hero-svg-title" viewBox="0 0 800 120">
-                <path id="heading-path" d="M 50,80 C 150,20 250,140 350,80 C 450,20 550,140 650,80" fill="none"/>
-                <text>
-                    <textPath xlink:href="#heading-path" startOffset="0%">🐉 梦幻奶龙日记 🐉</textPath>
-                </text>
-            </svg>
-            
-            <p>捕捉一只宇宙无敌呆萌小可爱！</p>
-            
-            <div class="hero-img-parallax-container js-parallax-hero" id="hero-img-box">
-                <span class="deco-icon icon-burger">🍔</span>
-                <span class="deco-icon icon-chicken">🍗</span>
-                <span class="deco-icon icon-star">⭐</span>
-                <img src="ph.jpg" alt="奶龙主视觉图">
-            </div>
-        </header>
-
-        <section class="story-section">
-            <div class="container">
-                <div class="story-timeline">
-                    
-                    <div class="story-card scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="1.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                            <svg class="card-deco-wave" viewBox="0 0 100 20"><path d="M0,10 C30,20 70,0 100,10 L100,20 L0,20 Z"/></svg>
-                        </div>
-                    </div>
-
-                    <div class="story-card reverse scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="2.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                            <svg class="card-deco-wave" viewBox="0 0 100 20"><path d="M0,10 C30,20 70,0 100,10 L100,20 L0,20 Z"/></svg>
-                        </div>
-                    </div>
-
-                    <div class="story-card scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="3.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="story-card reverse scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="4.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="story-card scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="5.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="story-card reverse scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="6.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="story-card scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="7.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="story-card reverse scroll-animate js-tilt-card">
-                        <div class="story-card-inner">
-                            <div class="story-img-wrapper">
-                                <img src="8.jpg" alt="可爱奶龙">
-                            </div>
-                            <div class="story-text">
-                                <h3>可爱奶龙</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <section class="bubble-gallery-section scroll-animate">
-            <div class="gallery-title-area">
-                <h2>梦幻泡泡展</h2>
-            </div>
-            
-            <div id="bubble-container"></div>
-        </section>
-
-    </main>
-
-    <footer>
-        <span class="footer-deco">✨</span>
-        <p>💛 感谢来到梦幻奶龙的数字艺术世界 💛</p>
-        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 20px;">倾情制作 · 酷炫满分</p>
-    </footer>
-
-
-    <script>
-        /**
-         * 梦幻奶龙网页交互引擎
-         * 包含：粒子系统、自定义光标、视差滚动、JS滚动动画、3D倾斜、无限漂浮气泡
-         */
-
-        // 统一缓动函数，用于 JS 动画
-        const Easing = {
-            easeOutCubic: t => (--t) * t * t + 1,
-            easeOutQuart: t => 1 - (--t) * t * t * t,
-            easeOutElastic: t => t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * 2 * Math.PI / 3) + 1
-        };
-
-        // =========================================================
-        // 1. 全局状态 & 初始化
-        // =========================================================
-        const state = {
-            isExperienceStarted: false,
-            mouseX: 0,
-            mouseY: 0,
-            windowWidth: window.innerWidth,
-            windowHeight: window.innerHeight,
-            scrollY: 0
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log("梦幻奶龙引擎启动...");
-            updateState();
-            initCustomCursor();
-            initParticleBackground();
-            initBubbleGallery(); // 重点：生成 A(1)-A(19) 图片
-            initScrollAnimations();
-            initTiltCards();
-            initParallaxHero();
-            
-            // 监听窗口大小改变和鼠标移动
-            window.addEventListener('resize', updateState);
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('scroll', handleScroll);
-        });
-
-        function updateState() {
-            state.windowWidth = window.innerWidth;
-            state.windowHeight = window.innerHeight;
-        }
-
-        function handleMouseMove(e) {
-            state.mouseX = e.clientX;
-            state.mouseY = e.clientY;
-        }
-        
-        function handleScroll() {
-            state.scrollY = window.pageYOffset;
-        }
-
-        // =========================================================
-        // 2. 核心：启动体验 (欢迎页点击)
-        // =========================================================
-        const startBtn = document.getElementById('start-btn');
-        const welcomeScreen = document.getElementById('welcome-screen');
-        const bgMusic = document.getElementById('bg-music');
-
-        startBtn.addEventListener('click', () => {
-            if (state.isExperienceStarted) return;
-            state.isExperienceStarted = true;
-            console.log("奶龙已解封！");
-
-            // 播放音乐
-            bgMusic.play().catch(error => {
-                console.log("浏览器拦截音乐播放，等待下一步用户交互:", error);
-            });
-
-            // 移除欢迎屏幕 (1s 渐隐动画在 CSS)
-            welcomeScreen.classList.add('hidden');
-            
-            // 移除欢迎页阻止滚动的限制
-            document.body.style.overflow = 'auto'; 
-            
-            // 延迟彻底隐藏欢迎页，防止妨碍主页交互
-            setTimeout(() => {
-                welcomeScreen.style.display = 'none';
-            }, 1000);
-        });
-
-        // =========================================================
-        // 3. 酷炫：自定义光标拖尾
-        // =========================================================
-        function initCustomCursor() {
-            const cursor = document.getElementById('custom-cursor');
-            const trails = [];
-            const trailCount = 10; // 尾巴长度
-
-            // 创建拖尾元件
-            for (let i = 0; i < trailCount; i++) {
-                const tr = document.createElement('div');
-                tr.className = 'cursor-trail';
-                document.body.appendChild(tr);
-                trails.push({
-                    el: tr,
-                    x: 0, y: 0,
-                    scale: 1 - (i / trailCount) // 越靠后越小
-                });
-            }
-
-            let lastMouseX = 0, lastMouseY = 0;
-
-            // 核心动画循环 (requestAnimationFrame)
-            function animateCursor() {
-                // 核心光标跟手 (快)
-                const targetX = state.mouseX;
-                const targetY = state.mouseY;
-                
-                // 轻微缓动，看起来更优雅
-                lastMouseX += (targetX - lastMouseX) * 0.3;
-                lastMouseY += (targetY - lastMouseY) * 0.3;
-
-                cursor.style.left = `${lastMouseX}px`;
-                cursor.style.top = `${lastMouseY}px`;
-
-                // 拖尾算法 (后一个追前一个)
-                let leaderX = lastMouseX;
-                let leaderY = lastMouseY;
-
-                trails.forEach((trail, index) => {
-                    trail.x += (leaderX - trail.x) * 0.4;
-                    trail.y += (leaderY - trail.y) * 0.4;
-                    
-                    trail.el.style.left = `${trail.x}px`;
-                    trail.el.style.top = `${trail.y}px`;
-                    
-                    // 动态修改 scale
-                    trail.el.style.transform = `translate(-50%, -50%) scale(${trail.scale})`;
-                    
-                    // 越往后透明度越低
-                    trail.el.style.opacity = trail.scale * 0.6;
-
-                    // 更新 leader 为当前位置，供下一个拖尾追随
-                    leaderX = trail.x;
-                    leaderY = trail.y;
-                });
-
-                requestAnimationFrame(animateCursor);
-            }
-
-            animateCursor(); // 启动循环
-        }
-
-        // =========================================================
-        // 4. 美丽：Canvas 粒子背景系统
-        // =========================================================
-        function initParticleBackground() {
-            const canvas = document.getElementById('particle-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            let particles = [];
-            const particleCount = 60; // 粒子数量
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-
-            // 粒子类定义
-            class Particle {
-                constructor() {
-                    this.reset();
-                }
-
-                reset() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 15 + 5; // 尺寸 5-20
-                    this.speedY = Math.random() * -0.8 - 0.2; // 缓慢向上漂浮
-                    this.speedX = (Math.random() - 0.5) * 0.3; // 轻微横向漂移
-                    this.opacity = Math.random() * 0.5 + 0.1; // 透明度 0.1-0.6
-                    // 粒子类型: 0=爱心, 1=星星
-                    this.type = Math.floor(Math.random() * 2); 
-                    this.rotation = Math.random() * Math.PI * 2;
-                    this.rotationSpeed = (Math.random() - 0.5) * 0.01;
-                }
-
-                update() {
-                    this.y += this.speedY;
-                    this.x += this.speedX;
-                    this.rotation += this.rotationSpeed;
-
-                    // 鼠标交互涟漪效果
-                    const dx = state.mouseX - this.x;
-                    const dy = state.mouseY - this.y;
-                    const distance = Math.sqrt(dx*dx + dy*dy);
-                    const forceArea = 150; // 鼠标影响范围
-
-                    if (distance < forceArea) {
-                        const force = (forceArea - distance) / forceArea;
-                        // 计算推开的方向向量
-                        const pushX = dx / distance * force * 1.5;
-                        const pushY = dy / distance * force * 1.5;
-                        // 缓慢推开
-                        this.x -= pushX;
-                        this.y -= pushY;
-                    }
-
-                    // 边界检查：飘出顶部重新从底部生成
-                    if (this.y < -this.size || this.x < -this.size || this.x > canvas.width + this.size) {
-                        if (Math.random() < 0.9) { // 大概率从底部重新生成
-                            this.y = canvas.height + this.size;
-                            this.x = Math.random() * canvas.width;
-                        } else { // 小概率重置所有
-                            this.reset();
-                        }
-                    }
-                }
-
-                draw() {
-                    ctx.save();
-                    ctx.translate(this.x, this.y);
-                    ctx.rotate(this.rotation);
-                    ctx.globalAlpha = this.opacity;
-                    ctx.fillStyle = (this.type === 0) ? '#FFB6C1' : '#FFD700'; // 粉色心，黄色星
-
-                    if (this.type === 0) {
-                        this.drawHeart();
-                    } else {
-                        this.drawStar();
-                    }
-                    ctx.restore();
-                }
-
-                // 精细的爱心绘制算法
-                drawHeart() {
-                    ctx.beginPath();
-                    const s = this.size / 20; // 缩放比例
-                    ctx.moveTo(10*s, 3*s);
-                    ctx.bezierCurveTo(10*s, 2.5*s, 9.5*s, 0, 5*s, 0);
-                    ctx.bezierCurveTo(-1*s, 0, -1*s, 11*s, 10*s, 19*s); // 尖端
-                    ctx.bezierCurveTo(21*s, 11*s, 21*s, 0, 15*s, 0);
-                    ctx.bezierCurveTo(11.5*s, 0, 10*s, 2.5*s, 10*s, 3*s);
-                    ctx.fill();
-                    ctx.closePath();
-                }
-
-                // 精细的五角星绘制算法
-                drawStar() {
-                    ctx.beginPath();
-                    const p = 5; // 五角星
-                    const r = this.size / 2;
-                    const innerR = r * 0.4;
-                    for (let i = 0; i < p * 2; i++) {
-                        const angle = Math.PI / p * i - Math.PI / 2;
-                        const currR = (i % 2 === 0) ? r : innerR;
-                        ctx.lineTo(Math.cos(angle) * currR, Math.sin(angle) * currR);
-                    }
-                    ctx.fill();
-                    ctx.closePath();
-                }
-            }
-
-            // 初始化粒子池
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-
-            function animateParticles() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height); // 清空 Canvas
-
-                particles.forEach(p => {
-                    p.update();
-                    p.draw();
-                });
-
-                requestAnimationFrame(animateParticles);
-            }
-
-            animateParticles(); // 启动循环
-        }
-
-        // =========================================================
-        // 5. 核心酷炫：动态生成无限漂浮气泡画廊 (A1-A19)
-        // =========================================================
-        function initBubbleGallery() {
-            const container = document.getElementById('bubble-container');
-            const imageCount = 19; // A(1).jpg 到 A(19).jpg
-            const bubbles = [];
-
-            // 1. 动态生成 HTML 结构
-            for (let i = 1; i <= imageCount; i++) {
-                const bubbleEl = document.createElement('div');
-                bubbleEl.className = 'nailong-bubble scroll-animate'; // 添加 JS 滚动动画基类
-                bubbleEl.setAttribute('data-index', i);
-
-                const imgEl = document.createElement('img');
-                imgEl.src = `A(${i}).jpg`; // 严格匹配命名 A(1).jpg
-                imgEl.alt = `梦幻奶龙 ${i}`;
-
-                // 处理图片加载失败（防止代码报错影响其他气泡）
-                imgEl.onerror = function() {
-                    bubbleEl.style.display = 'none'; // 隐藏加载失败的气泡
-                    console.warn(`图片 A(${i}).jpg 加载失败，已隐藏该气泡。`);
-                };
-
-                bubbleEl.appendChild(imgEl);
-                container.appendChild(bubbleEl);
-                bubbles.push(bubbleEl);
-            }
-
-            // 2. JS 随机初始化气泡的位置、大小、运动参数
-            bubbles.forEach((bubble, index) => {
-                // 随机尺寸 (120px - 280px)
-                const size = Math.random() * 160 + 120;
-                bubble.style.width = `${size}px`;
-                bubble.style.height = `${size}px`;
-
-                // 核心：设置随机漂浮动画 (在 CSS 定义的基础动画上个性化)
-                const duration = Math.random() * 6 + 4; // 周期 4s - 10s
-                const delay = Math.random() * -10;     // 随机负延迟，打乱初始节奏
-                
-                // 随机选择一个漂浮轨迹变体 (CSS 定义多个 variants 用于增加复杂性)
-                // 为保持代码简洁，这里在 JS 中直接修改 transform 向量
-                const randX = (Math.random() - 0.5) * 20; // X 轴偏移范围 +-20px
-                const randY = Math.random() * -30 - 10;   // Y 轴漂浮范围 -10px 到 -40px
-                const randR = (Math.random() - 0.5) * 10; // 旋转 +-5deg
-                
-                // 动态创建一个唯一的 Keyframe (通过 CSS Rule 注入，这里用简单的随机偏移替代)
-                bubble.style.animationName = 'bubbleFloatBase'; // 使用 CSS 定义的基础基础
-                bubble.style.animationDuration = `${duration}s`;
-                bubble.style.animationDelay = `${delay}s`;
-                
-                // 随机初始位置 (在画廊区域内)
-                const posX = Math.random() * (state.windowWidth - size - 40) + 20; // 留 20px 边距
-                const posY = Math.random() * (container.offsetHeight - size - 40) + 20;
-                bubble.style.left = `${posX}px`;
-                bubble.style.top = `${posY}px`;
-
-                // 随机边框颜色 (黄色系/粉色系/蓝色系)
-                const colors = ['#FFF', '#FFE4B5', '#FFB6C1', '#87CEEB'];
-                bubble.style.borderColor = colors[Math.floor(Math.random() * colors.length)];
-                
-                // JS 悬停交互：变大并停止运动
-                bubble.addEventListener('mouseenter', () => {
-                    bubble.style.transform = `scale(1.2) translateZ(50px)`; // 放大 & 3D 悬浮
-                });
-                
-                bubble.addEventListener('mouseleave', () => {
-                    bubble.style.transform = `scale(1) translateZ(0)`; // 还原
-                });
-            });
-        }
-
-        // =========================================================
-        // 6. GSAP 级 JS 滚动动画基类 (Intersection Observer)
-        // =========================================================
-        function initScrollAnimations() {
-            const animatedElements = document.querySelectorAll('.scroll-animate');
-
-            const observerOptions = {
-                root: null, // 使用视口作为根
-                threshold: 0.15, // 元素进入视口 15% 时触发
-                rootMargin: "0px 0px -50px 0px" // 距离底部 50px 时提前触发，感觉更优雅
-            };
-
-            const intersectionObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        // 进入视口，添加类触发 CSS 动画
-                        const target = entry.target;
-                        
-                        // 随机回弹缓动 (原生模拟高级效果)
-                        const delays = [0, 100, 200, 300];
-                        const delay = delays[Math.floor(Math.random() * delays.length)];
-                        
-                        setTimeout(() => {
-                            target.classList.add('animated');
-                            
-                            // 针对气泡画廊部分的特殊进场动画：逐个弹入
-                            if (target.classList.contains('nailong-bubble')) {
-                                target.style.transition = `transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease`;
-                            }
-                        }, delay);
-
-                        // 动画只触发一次，移除监听以节省性能
-                        observer.unobserve(target);
-                    }
-                });
-            }, observerOptions);
-
-            animatedElements.forEach(el => {
-                intersectionObserver.observe(el);
-            });
-        }
-
-        // =========================================================
-        // 7. 高级交互：全网页视差滚动
-        // =========================================================
-        function initParallaxHero() {
-            const heroBox = document.getElementById('hero-img-box');
-            const heroImg = heroBox.querySelector('img');
-            const decoIcons = heroBox.querySelectorAll('.deco-icon');
-
-            function parallaxLoop() {
-                // 只有主页开启后才触发视差
-                if (state.isExperienceStarted && state.windowWidth > 992) {
-                    const scrolled = state.scrollY;
-                    
-                    // 头部文本缓慢视差向下移动 (CSS handle via main element padding if needed)
-                    // 主图更慢移动 (制造深邃感)
-                    const heroParallaxVal = scrolled * 0.15;
-                    heroImg.style.transform = `translateY(${heroParallaxVal}px)`;
-                    
-                    // 装饰小图标反向视差向上移动 (制造分离感)
-                    decoIcons.forEach((icon, index) => {
-                        const speed = 0.2 + (index * 0.1);
-                        icon.style.transform = `translateY(${scrolled * -speed}px)`;
-                    });
-                }
-                
-                requestAnimationFrame(parallaxLoop);
-            }
-            
-            parallaxLoop();
-        }
-
-        // =========================================================
-        // 8. 精细交互：JS 3D Tilt 卡片倾斜 (前8张图)
-        // =========================================================
-        function initTiltCards() {
-            const cards = document.querySelectorAll('.js-tilt-card');
-            if (state.windowWidth < 992) return; // 手机端禁用 3D 倾斜，防止点击误操作
-
-            cards.forEach(card => {
-                // 获取卡片内的真正元件
-                const cardInner = card.querySelector('.story-card-inner');
-
-                card.addEventListener('mousemove', (e) => {
-                    const cardRect = card.getBoundingClientRect();
-                    const cardWidth = cardRect.width;
-                    const cardHeight = cardRect.height;
-                    
-                    // 计算鼠标距离卡片中心的绝对百分比偏移 (核心 Tilt 算法)
-                    const centerX = cardRect.left + cardWidth / 2;
-                    const centerY = cardRect.top + cardHeight / 2;
-                    
-                    const mouseX = e.clientX;
-                    const mouseY = e.clientY;
-                    
-                    // 偏移百分比 +-50
-                    const percentX = (mouseX - centerX) / (cardWidth / 2) * 50; 
-                    const percentY = (mouseY - centerY) / (cardHeight / 2) * 50;
-
-                    // 设置 Tilt 参数 (旋转角度 +-10deg 保持优雅)
-                    const maxTilt = 10;
-                    const tiltX = (percentY / 50 * maxTilt).toFixed(2); // 反向旋转制造倾斜
-                    const tiltY = -(percentX / 50 * maxTilt).toFixed(2);
-
-                    // 应用 3D transform (优雅回弹动画在 CSS transition: transform 0.1s linear)
-                    cardInner.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
-                });
-
-                // 鼠标离开还原
-                card.addEventListener('mouseleave', () => {
-                    // 使用 cubic-bezier 回弹，更优雅
-                    cardInner.style.transition = `transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)`;
-                    cardInner.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
-                    
-                    // 还原后恢复快速度以便下一次跟手
-                    setTimeout(() => {
-                        cardInner.style.transition = `transform 0.1s linear`;
-                    }, 500);
-                });
-            });
-        }
-
-    </script>
+  </div>
+
+  <div class="h-scroll">
+    <div class="h-scroll-line"></div>
+    <span>向下探索</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     INTRO
+══════════════════════════════════════════ -->
+<section id="intro">
+  <div class="wrap">
+    <div class="intro-grid">
+      <div class="sr-l">
+        <p class="sec-label">关于奶龙</p>
+        <h2 class="sec-heading">一只小龙<br/>承载了<em>无数人</em><br/>的柔软与温情</h2>
+        <div class="intro-body">
+          <p>奶龙，生于数字时代的温柔幻想，是无数灵魂在喧嚣世界中寻觅到的一片宁静之地。它以圆润的身形、清澈的眼眸，诠释着最纯粹的存在之美。</p>
+          <p>这座博物馆，不仅是影像的收藏，更是情感的圣所。每一帧画面背后，都藏着一个人与美相遇的瞬间——那种相遇，如此短暂，却又在艺术之中，得以永存。</p>
+          <p>美，从不因岁月的流逝而真正消失。它只是从生活的喧嚣中悄然隐退，以另一种形式，在艺术的殿堂里，静静地、永恒地，发出光芒。</p>
+        </div>
+      </div>
+      <div class="sr-r">
+        <div class="intro-frame">
+          <img src="奶1.jpg" alt="奶龙 藏品 No.001"/>
+        </div>
+        <p class="intro-cap">藏品 No.001 &nbsp;·&nbsp; Collection Opening</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gold-line sr"></div>
+
+<!-- ══════════════════════════════════════════
+     DETAILS
+══════════════════════════════════════════ -->
+<section id="details">
+  <div class="wrap sr">
+    <div class="det-item">
+      <div class="det-num">01</div>
+      <h3 class="det-title">起源与诞生</h3>
+      <p class="det-body">奶龙诞生于中国互联网的温柔角落，以极度可爱的造型迅速俘获无数心灵。"奶"意味着奶白与柔软，"龙"则承载着东方神话的古老气韵，二者相融，诞生了一种独特的美学存在。</p>
+    </div>
+    <div class="det-vr"></div>
+    <div class="det-item">
+      <div class="det-num">02</div>
+      <h3 class="det-title">形象与美学</h3>
+      <p class="det-body">圆润的轮廓、纯净的配色，奶龙的形象凝练了当代审美中对"软萌"文化的极致追求。它既是艺术，又是情感符号，在每一个角度都散发着令人心软的气质。</p>
+    </div>
+    <div class="det-vr"></div>
+    <div class="det-item">
+      <div class="det-num">03</div>
+      <h3 class="det-title">文化影响</h3>
+      <p class="det-body">作为一种文化现象，奶龙跨越了年龄与地域的界限，成为共同的情感语言。它以柔软的力量，连接着每一颗孤独而渴望温暖的心。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CHAPTER I
+══════════════════════════════════════════ -->
+<div class="ch-break sr" id="g1">
+  <p class="ch-num">Chapter I · 壹</p>
+  <h2 class="ch-title">初见之美</h2>
+  <p class="ch-desc">相遇只需一瞬，而美，将在记忆中永远停留</p>
+</div>
+
+<!-- Gallery I: masonry 3-col (2–13) -->
+<section class="gal-sec">
+  <div class="gal-header sr">
+    <span class="gal-label">Gallery I &nbsp;·&nbsp; 初见</span>
+    <span class="gal-range">No.002 — No.013</span>
+  </div>
+  <div class="g-mason sg">
+    <div class="pi" data-idx="1"><img src="奶2.jpg" alt="奶龙 No.002" loading="lazy"/><div class="pi-ov"><span>No.002</span></div></div>
+    <div class="pi" data-idx="2"><img src="奶3.jpg" alt="奶龙 No.003" loading="lazy"/><div class="pi-ov"><span>No.003</span></div></div>
+    <div class="pi" data-idx="3"><img src="奶4.jpg" alt="奶龙 No.004" loading="lazy"/><div class="pi-ov"><span>No.004</span></div></div>
+    <div class="pi" data-idx="4"><img src="奶5.jpg" alt="奶龙 No.005" loading="lazy"/><div class="pi-ov"><span>No.005</span></div></div>
+    <div class="pi" data-idx="5"><img src="奶6.jpg" alt="奶龙 No.006" loading="lazy"/><div class="pi-ov"><span>No.006</span></div></div>
+    <div class="pi" data-idx="6"><img src="奶7.jpg" alt="奶龙 No.007" loading="lazy"/><div class="pi-ov"><span>No.007</span></div></div>
+    <div class="pi" data-idx="7"><img src="奶8.jpg" alt="奶龙 No.008" loading="lazy"/><div class="pi-ov"><span>No.008</span></div></div>
+    <div class="pi" data-idx="8"><img src="奶9.jpg" alt="奶龙 No.009" loading="lazy"/><div class="pi-ov"><span>No.009</span></div></div>
+    <div class="pi" data-idx="9"><img src="奶10.jpg" alt="奶龙 No.010" loading="lazy"/><div class="pi-ov"><span>No.010</span></div></div>
+    <div class="pi" data-idx="10"><img src="奶11.jpg" alt="奶龙 No.011" loading="lazy"/><div class="pi-ov"><span>No.011</span></div></div>
+    <div class="pi" data-idx="11"><img src="奶12.jpg" alt="奶龙 No.012" loading="lazy"/><div class="pi-ov"><span>No.012</span></div></div>
+    <div class="pi" data-idx="12"><img src="奶13.jpg" alt="奶龙 No.013" loading="lazy"/><div class="pi-ov"><span>No.013</span></div></div>
+  </div>
+</section>
+
+<!-- strip 14–16 -->
+<section class="gal-sec">
+  <div class="g-strip sg">
+    <div class="pi" data-idx="13" style="height:340px"><img src="奶14.jpg" alt="奶龙 No.014" loading="lazy" style="height:340px"/><div class="pi-ov"><span>No.014</span></div></div>
+    <div class="pi" data-idx="14" style="height:340px"><img src="奶15.jpg" alt="奶龙 No.015" loading="lazy" style="height:340px"/><div class="pi-ov"><span>No.015</span></div></div>
+    <div class="pi" data-idx="15" style="height:340px"><img src="奶16.jpg" alt="奶龙 No.016" loading="lazy" style="height:340px"/><div class="pi-ov"><span>No.016</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ QUOTE 1 -->
+<div class="quote-wrap">
+  <div class="quote-box sr">
+    <span class="q-mark">&ldquo;</span>
+    <p class="q-text">世间一切美好，皆是短暂的相遇；<br/>而艺术，是人类为美所建造的永恒居所。</p>
+    <div class="q-rule"></div>
+    <p class="q-attr">— 奶龙博物馆 · 馆训</p>
+  </div>
+</div>
+
+<!-- banner -->
+<div class="banner">
+  <div class="banner-bg"><img src="奶17.jpg" alt="" id="ban1"/></div>
+  <div class="banner-ov"></div>
+  <div class="banner-txt sr">
+    <h2 class="banner-title">美，是时间的叛逆者</h2>
+    <p class="banner-sub">Beauty defies the passage of time</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CHAPTER II
+══════════════════════════════════════════ -->
+<div class="ch-break sr" id="g2">
+  <p class="ch-num">Chapter II · 贰</p>
+  <h2 class="ch-title">生动之魂</h2>
+  <p class="ch-desc">每一个神情，都是宇宙赐予的独特印记</p>
+</div>
+
+<!-- featured + quad (18–24) -->
+<section class="gal-sec">
+  <div class="gal-header sr">
+    <span class="gal-label">Gallery II &nbsp;·&nbsp; 生动</span>
+    <span class="gal-range">No.018 — No.031</span>
+  </div>
+  <div class="g-feat sg" style="margin-bottom:1.3rem">
+    <div class="pi tall" data-idx="17" style=""><img src="奶18.jpg" alt="奶龙 No.018" loading="lazy" style="height:600px"/><div class="pi-ov"><span>No.018</span></div></div>
+    <div class="pi" data-idx="18"><img src="奶19.jpg" alt="奶龙 No.019" loading="lazy" style="height:290px"/><div class="pi-ov"><span>No.019</span></div></div>
+    <div class="pi" data-idx="19"><img src="奶20.jpg" alt="奶龙 No.020" loading="lazy" style="height:290px"/><div class="pi-ov"><span>No.020</span></div></div>
+  </div>
+  <div class="g-quad sg">
+    <div class="pi" data-idx="20"><img src="奶21.jpg" alt="奶龙 No.021" loading="lazy" style="height:240px"/><div class="pi-ov"><span>No.021</span></div></div>
+    <div class="pi" data-idx="21"><img src="奶22.jpg" alt="奶龙 No.022" loading="lazy" style="height:240px"/><div class="pi-ov"><span>No.022</span></div></div>
+    <div class="pi" data-idx="22"><img src="奶23.jpg" alt="奶龙 No.023" loading="lazy" style="height:240px"/><div class="pi-ov"><span>No.023</span></div></div>
+    <div class="pi" data-idx="23"><img src="奶24.jpg" alt="奶龙 No.024" loading="lazy" style="height:240px"/><div class="pi-ov"><span>No.024</span></div></div>
+  </div>
+</section>
+
+<!-- strip 25–29 -->
+<section class="gal-sec">
+  <div class="g-strip sg">
+    <div class="pi" data-idx="24" style="height:360px"><img src="奶25.jpg" alt="奶龙 No.025" loading="lazy" style="height:360px"/><div class="pi-ov"><span>No.025</span></div></div>
+    <div class="pi" data-idx="25" style="height:360px"><img src="奶26.jpg" alt="奶龙 No.026" loading="lazy" style="height:360px"/><div class="pi-ov"><span>No.026</span></div></div>
+    <div class="pi" data-idx="26" style="height:360px"><img src="奶27.jpg" alt="奶龙 No.027" loading="lazy" style="height:360px"/><div class="pi-ov"><span>No.027</span></div></div>
+    <div class="pi" data-idx="27" style="height:360px"><img src="奶28.jpg" alt="奶龙 No.028" loading="lazy" style="height:360px"/><div class="pi-ov"><span>No.028</span></div></div>
+    <div class="pi" data-idx="28" style="height:360px"><img src="奶29.jpg" alt="奶龙 No.029" loading="lazy" style="height:360px"/><div class="pi-ov"><span>No.029</span></div></div>
+  </div>
+</section>
+
+<!-- duo 30-31 -->
+<section class="gal-sec">
+  <div class="g-duo sg">
+    <div class="pi" data-idx="29"><img src="奶30.jpg" alt="奶龙 No.030" loading="lazy" style="height:420px"/><div class="pi-ov"><span>No.030</span></div></div>
+    <div class="pi" data-idx="30"><img src="奶31.jpg" alt="奶龙 No.031" loading="lazy" style="height:420px"/><div class="pi-ov"><span>No.031</span></div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ STATEMENT -->
+<section id="statement">
+  <div class="stmt-inner">
+    <p class="sec-label sr">艺术宣言</p>
+    <h2 class="stmt-heading sr">
+      在这个瞬息万变的世界，<br/>
+      <strong>奶龙</strong>是一个温柔的锚点——<br/>
+      提醒我们，美从未真正离去
+    </h2>
+    <p class="stmt-body sr">
+      生活将美一点一点磨损，时间将记忆一层一层风化。然而，当镜头定格那一刻，当像素凝固成永恒，消逝便成了谎言。奶龙的每一张影像，都是对时间的温柔对抗——以最柔软的形态，完成最坚硬的抵抗。这，便是艺术的奇迹，也是美的不朽之道。
+    </p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════ QUOTE 2 -->
+<div class="quote-wrap" style="background:var(--surface)">
+  <div class="quote-box sr">
+    <span class="q-mark">&ldquo;</span>
+    <p class="q-text">软萌是一种哲学，<br/>圆润是一种智慧，<br/>奶龙，是宇宙给予人类的小小礼物。</p>
+    <div class="q-rule"></div>
+    <p class="q-attr">— 奶龙博物馆 · 藏馆寄语</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CHAPTER III
+══════════════════════════════════════════ -->
+<div class="ch-break sr" id="g3">
+  <p class="ch-num">Chapter III · 叁</p>
+  <h2 class="ch-title">灵魂深处</h2>
+  <p class="ch-desc">那些无声的凝视，比千言万语更为动人</p>
+</div>
+
+<section class="gal-sec">
+  <div class="gal-header sr">
+    <span class="gal-label">Gallery III &nbsp;·&nbsp; 灵魂</span>
+    <span class="gal-range">No.032 — No.047</span>
+  </div>
+  <!-- trio -->
+  <div class="g-trio sg" style="margin-bottom:1.3rem">
+    <div class="pi" data-idx="31"><img src="奶32.jpg" alt="奶龙 No.032" loading="lazy" style="height:480px"/><div class="pi-ov"><span>No.032</span></div></div>
+    <div class="pi" data-idx="32"><img src="奶33.jpg" alt="奶龙 No.033" loading="lazy" style="height:480px"/><div class="pi-ov"><span>No.033</span></div></div>
+    <div class="pi" data-idx="33"><img src="奶34.jpg" alt="奶龙 No.034" loading="lazy" style="height:480px"/><div class="pi-ov"><span>No.034</span></div></div>
+  </div>
+  <!-- five -->
+  <div class="g-five sg" style="margin-bottom:1.3rem">
+    <div class="pi" data-idx="34"><img src="奶35.jpg" alt="奶龙 No.035" loading="lazy" style="height:200px"/><div class="pi-ov"><span>No.035</span></div></div>
+    <div class="pi" data-idx="35"><img src="奶36.jpg" alt="奶龙 No.036" loading="lazy" style="height:200px"/><div class="pi-ov"><span>No.036</span></div></div>
+    <div class="pi" data-idx="36"><img src="奶37.jpg" alt="奶龙 No.037" loading="lazy" style="height:200px"/><div class="pi-ov"><span>No.037</span></div></div>
+    <div class="pi" data-idx="37"><img src="奶38.jpg" alt="奶龙 No.038" loading="lazy" style="height:200px"/><div class="pi-ov"><span>No.038</span></div></div>
+    <div class="pi" data-idx="38"><img src="奶39.jpg" alt="奶龙 No.039" loading="lazy" style="height:200px"/><div class="pi-ov"><span>No.039</span></div></div>
+  </div>
+  <!-- mason -->
+  <div class="g-mason sg">
+    <div class="pi" data-idx="39"><img src="奶40.jpg" alt="奶龙 No.040" loading="lazy"/><div class="pi-ov"><span>No.040</span></div></div>
+    <div class="pi" data-idx="40"><img src="奶41.jpg" alt="奶龙 No.041" loading="lazy"/><div class="pi-ov"><span>No.041</span></div></div>
+    <div class="pi" data-idx="41"><img src="奶42.jpg" alt="奶龙 No.042" loading="lazy"/><div class="pi-ov"><span>No.042</span></div></div>
+    <div class="pi" data-idx="42"><img src="奶43.jpg" alt="奶龙 No.043" loading="lazy"/><div class="pi-ov"><span>No.043</span></div></div>
+    <div class="pi" data-idx="43"><img src="奶44.jpg" alt="奶龙 No.044" loading="lazy"/><div class="pi-ov"><span>No.044</span></div></div>
+    <div class="pi" data-idx="44"><img src="奶45.jpg" alt="奶龙 No.045" loading="lazy"/><div class="pi-ov"><span>No.045</span></div></div>
+  </div>
+</section>
+
+<section class="gal-sec">
+  <div class="g-duo sg">
+    <div class="pi" data-idx="45"><img src="奶46.jpg" alt="奶龙 No.046" loading="lazy" style="height:400px"/><div class="pi-ov"><span>No.046</span></div></div>
+    <div class="pi" data-idx="46"><img src="奶47.jpg" alt="奶龙 No.047" loading="lazy" style="height:400px"/><div class="pi-ov"><span>No.047</span></div></div>
+  </div>
+</section>
+
+<!-- banner 2 -->
+<div class="banner" style="margin:4rem 0">
+  <div class="banner-bg"><img src="奶48.jpg" alt=""/></div>
+  <div class="banner-ov"></div>
+  <div class="banner-txt sr">
+    <h2 class="banner-title">生命短暂<br/>艺术长存</h2>
+    <p class="banner-sub">Ars longa, vita brevis</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CHAPTER IV
+══════════════════════════════════════════ -->
+<div class="ch-break sr" id="g4">
+  <p class="ch-num">Chapter IV · 肆</p>
+  <h2 class="ch-title">永恒之境</h2>
+  <p class="ch-desc">当光阴凝固，当瞬间化为永恒，美才真正完成了自己</p>
+</div>
+
+<section class="gal-sec">
+  <div class="gal-header sr">
+    <span class="gal-label">Gallery IV &nbsp;·&nbsp; 永恒</span>
+    <span class="gal-range">No.049 — No.061</span>
+  </div>
+  <div class="g-feat sg" style="margin-bottom:1.3rem">
+    <div class="pi" data-idx="48"><img src="奶49.jpg" alt="奶龙 No.049" loading="lazy" style="height:340px"/><div class="pi-ov"><span>No.049</span></div></div>
+    <div class="pi tall" data-idx="49"><img src="奶50.jpg" alt="奶龙 No.050" loading="lazy" style="height:694px"/><div class="pi-ov"><span>No.050</span></div></div>
+    <div class="pi" data-idx="50"><img src="奶51.jpg" alt="奶龙 No.051" loading="lazy" style="height:340px"/><div class="pi-ov"><span>No.051</span></div></div>
+  </div>
+  <div class="g-quad sg" style="margin-bottom:1.3rem">
+    <div class="pi" data-idx="51"><img src="奶52.jpg" alt="奶龙 No.052" loading="lazy" style="height:260px"/><div class="pi-ov"><span>No.052</span></div></div>
+    <div class="pi" data-idx="52"><img src="奶53.jpg" alt="奶龙 No.053" loading="lazy" style="height:260px"/><div class="pi-ov"><span>No.053</span></div></div>
+    <div class="pi" data-idx="53"><img src="奶54.jpg" alt="奶龙 No.054" loading="lazy" style="height:260px"/><div class="pi-ov"><span>No.054</span></div></div>
+    <div class="pi" data-idx="54"><img src="奶55.jpg" alt="奶龙 No.055" loading="lazy" style="height:260px"/><div class="pi-ov"><span>No.055</span></div></div>
+  </div>
+  <div class="g-mason sg">
+    <div class="pi" data-idx="55"><img src="奶56.jpg" alt="奶龙 No.056" loading="lazy"/><div class="pi-ov"><span>No.056</span></div></div>
+    <div class="pi" data-idx="56"><img src="奶57.jpg" alt="奶龙 No.057" loading="lazy"/><div class="pi-ov"><span>No.057</span></div></div>
+    <div class="pi" data-idx="57"><img src="奶58.jpg" alt="奶龙 No.058" loading="lazy"/><div class="pi-ov"><span>No.058</span></div></div>
+    <div class="pi" data-idx="58"><img src="奶59.jpg" alt="奶龙 No.059" loading="lazy"/><div class="pi-ov"><span>No.059</span></div></div>
+    <div class="pi" data-idx="59"><img src="奶60.jpg" alt="奶龙 No.060" loading="lazy"/><div class="pi-ov"><span>No.060</span></div></div>
+    <div class="pi" data-idx="60"><img src="奶61.jpg" alt="奶龙 No.061" loading="lazy"/><div class="pi-ov"><span>No.061</span></div></div>
+  </div>
+</section>
+
+<!-- final hero photo 62 -->
+<div class="banner" style="height:72vh;margin:0">
+  <div class="banner-bg">
+    <img src="奶62.jpg" alt="奶龙 No.062 终章" style="height:130%"/>
+  </div>
+  <div class="banner-ov" style="background:linear-gradient(to top,rgba(8,7,5,.92) 0%,rgba(8,7,5,.2) 55%,rgba(8,7,5,.55) 100%)"></div>
+  <div class="banner-txt sr" style="position:absolute;bottom:4rem;left:0;right:0">
+    <p style="font-family:var(--latin);font-style:italic;font-size:.7rem;letter-spacing:.4em;color:var(--gold-dk);margin-bottom:.9rem">Final Work · No.062</p>
+    <h2 class="banner-title" style="font-size:clamp(1.4rem,2.6vw,2.4rem)">美的终点，是新的永恒的起点</h2>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ QUOTE 3 -->
+<div class="quote-wrap">
+  <div class="quote-box sr">
+    <span class="q-mark">&ldquo;</span>
+    <p class="q-text">即使全世界都在遗忘，<br/>艺术依然记得你曾经来过，<br/>依然记得你有多美。</p>
+    <div class="q-rule"></div>
+    <p class="q-attr">— 奶龙博物馆 · 闭馆语</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CREDITS
+══════════════════════════════════════════ -->
+<section id="credits">
+  <div class="cr-glyph sr">龍</div>
+  <h2 class="cr-title sr">奶龙博物馆</h2>
+  <p class="cr-sub sr">Nailong Museum · MMXXV</p>
+  <div class="cr-rule sr"></div>
+  <div class="cr-motto sr">
+    <strong>美在生活中消亡</strong><br/>
+    <strong>在艺术中不朽</strong><br/><br/>
+    Beauty perishes in life<br/>Immortal in art
+  </div>
+  <p class="cr-note sr">本博物馆珍藏奶龙影像六十二帧 &nbsp;·&nbsp; 愿每一位到访者，都能在此寻得片刻美的慰藉</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="ft-l">奶龙博物馆 · Nailong Museum</span>
+  <span class="ft-c">美在生活中消亡，在艺术中不朽</span>
+  <span class="ft-r">62 Works · MMXXV</span>
+</footer>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+/* ── Preloader ─────────────────────────────── */
+(()=>{
+  const pl  = document.getElementById('preloader');
+  const num = document.getElementById('plNum');
+  let n=0;
+  const t = setInterval(()=>{
+    n += Math.floor(Math.random()*9)+4;
+    if(n>=100){n=100;clearInterval(t)}
+    num.textContent = n+'%';
+  },70);
+  const hide=()=>{ pl.classList.add('out'); };
+  window.addEventListener('load',()=>setTimeout(hide,2500));
+  setTimeout(hide,3800);
+})();
+
+/* ── Random Hero Collage ───────────────────── */
+(()=>{
+  const total = 62;
+  // pick 4 unique random indices 1..62
+  const picks = [];
+  while(picks.length < 4){
+    const r = Math.floor(Math.random()*total)+1;
+    if(!picks.includes(r)) picks.push(r);
+  }
+  const fmt = n => String(n).padStart(3,'0');
+  const slots = [
+    { img:'cp-main-img', badge:'cp-main-badge', tag:'cp-main-tag' },
+    { img:'cp-tr-img',   badge:null,             tag:'cp-tr-tag'  },
+    { img:'cp-bl-img',   badge:null,             tag:'cp-bl-tag'  },
+    { img:'cp-br-img',   badge:null,             tag:'cp-br-tag'  },
+  ];
+  slots.forEach((s,i)=>{
+    const el = document.getElementById(s.img);
+    if(el){ el.src = '奶'+picks[i]+'.jpg'; el.alt='奶龙 No.'+fmt(picks[i]); }
+    if(s.badge){
+      const b = document.getElementById(s.badge);
+      if(b) b.textContent = 'No.'+fmt(picks[i]);
+    }
+    const tg = document.getElementById(s.tag);
+    if(tg) tg.textContent = 'Collection · No.'+fmt(picks[i]);
+  });
+  const meta = document.getElementById('collage-meta');
+  if(meta) meta.textContent = picks.map(p=>'No.'+fmt(p)).join(' · ');
+
+  // lightbox hookup for collage photos
+  document.querySelectorAll('.cp').forEach(cp=>{
+    cp.addEventListener('click',()=>{
+      const img = cp.querySelector('img');
+      if(img) openLb(img.src, img.alt);
+    });
+  });
+})();
+
+/* ── Custom Cursor ─────────────────────────── */
+(()=>{
+  const dot  = document.getElementById('cur-dot');
+  const ring = document.getElementById('cur-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX; my=e.clientY;
+    dot.style.left=mx+'px'; dot.style.top=my+'px';
+  });
+  (function loop(){
+    rx+=(mx-rx)*.11; ry+=(my-ry)*.11;
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ── Navbar stuck ──────────────────────────── */
+(()=>{
+  const nav=document.getElementById('nav');
+  window.addEventListener('scroll',()=>nav.classList.toggle('stuck',scrollY>80),{passive:true});
+})();
+
+/* ── Progress bar ──────────────────────────── */
+(()=>{
+  const bar=document.getElementById('prog');
+  window.addEventListener('scroll',()=>{
+    bar.style.width=(scrollY/(document.body.scrollHeight-innerHeight)*100)+'%';
+  },{passive:true});
+})();
+
+/* ── Scroll Reveal ─────────────────────────── */
+(()=>{
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target);} });
+  },{threshold:.12,rootMargin:'0px 0px -50px 0px'});
+  document.querySelectorAll('.sr,.sr-l,.sr-r,.sg').forEach(el=>obs.observe(el));
+})();
+
+/* ── Parallax banners ──────────────────────── */
+(()=>{
+  const imgs=document.querySelectorAll('.banner-bg img');
+  const tick=()=>{
+    imgs.forEach(img=>{
+      const r=img.closest('.banner').getBoundingClientRect();
+      const d=(r.top+r.height/2-innerHeight/2)*.18;
+      img.style.transform=`translateY(${d}px)`;
+    });
+  };
+  window.addEventListener('scroll',tick,{passive:true});
+  tick();
+})();
+
+/* ── Smooth anchors ────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+});
+
+/* ── Lightbox ──────────────────────────────── */
+const lb      = document.getElementById('lb');
+const lbImg   = document.getElementById('lbImg');
+const lbCap   = document.getElementById('lbCap');
+const lbClose = document.getElementById('lbClose');
+const lbPrev  = document.getElementById('lbPrev');
+const lbNext  = document.getElementById('lbNext');
+
+// build index from all gallery .pi items
+const allPi = ()=>Array.from(document.querySelectorAll('.pi[data-idx] img'));
+let curIdx = 0;
+
+function openLb(src, alt){
+  lbImg.style.opacity='0';
+  lbImg.src=src; lbImg.alt=alt;
+  lbCap.textContent=alt;
+  lb.classList.add('on');
+  document.body.style.overflow='hidden';
+  setTimeout(()=>lbImg.style.opacity='1',60);
+}
+function closeLb(){ lb.classList.remove('on'); document.body.style.overflow=''; }
+function nav(dir){
+  const items=allPi();
+  curIdx=(curIdx+dir+items.length)%items.length;
+  const img=items[curIdx];
+  lbImg.style.opacity='0';
+  setTimeout(()=>{ lbImg.src=img.src; lbImg.alt=img.alt; lbCap.textContent=img.alt; lbImg.style.opacity='1'; },200);
+}
+lbImg.style.transition='opacity .22s';
+
+document.querySelectorAll('.pi').forEach((pi,i)=>{
+  pi.addEventListener('click',()=>{
+    curIdx=i;
+    const img=pi.querySelector('img');
+    openLb(img.src,img.alt);
+  });
+});
+lbClose.addEventListener('click',closeLb);
+lbPrev.addEventListener('click',()=>nav(-1));
+lbNext.addEventListener('click',()=>nav(1));
+lb.addEventListener('click',e=>{ if(e.target===lb)closeLb(); });
+document.addEventListener('keydown',e=>{
+  if(!lb.classList.contains('on'))return;
+  if(e.key==='Escape')closeLb();
+  if(e.key==='ArrowLeft')nav(-1);
+  if(e.key==='ArrowRight')nav(1);
+});
+
+/* ── Gold shimmer on hero title em ─────────── */
+(()=>{
+  const el=document.querySelector('.h-title em');
+  if(!el)return;
+  let a=0;
+  (function sh(){
+    a=(a+.4)%360;
+    el.style.backgroundImage=`linear-gradient(${a}deg,#e8d09a,#c9aa72,#f5e0aa,#c9aa72)`;
+    el.style.webkitBackgroundClip='text';
+    el.style.webkitTextFillColor='transparent';
+    el.style.backgroundClip='text';
+    requestAnimationFrame(sh);
+  })();
+})();
+</script>
 </body>
 </html>
+
+
+
